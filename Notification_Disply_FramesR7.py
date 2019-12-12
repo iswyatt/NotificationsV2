@@ -35,6 +35,7 @@ class gv_global:
         self.HTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
         self.STuple = (0,0,0,0,0,0,0,0)     #tuple # on screen CAS count
         self.BTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen below CAS count
+        self.event_adder = 0 # global scroll direction indicator, mouse wheel event driven
         ##################################################################################
         self.ImageSize    = (self.CAS_Image_Width, self.CAS_Image_Height)
         
@@ -160,14 +161,23 @@ class ScrollCanvas():
         self.sv.place(  x = self.rect[0], 
                         y = self.rect[1]  )
         #### Up and Down Arrow Shapes ##################
-        a = 16 # length of arrow lines
+        a = 13 # length of arrow lines
         b = math.sqrt(0.75)*a
-        delx = 24
-        dely = 2
+        delx = 26
+        dely = 4
         self.up_arrow   = (0+delx, b+dely,    a+delx, b+dely,        (a/2)+delx, 0+dely)
         self.down_arrow = (0+delx, 0+dely,    (a/2)+delx, b+dely,    (a)+delx, 0+dely)
+        ##### load all of the CCue images and class variable, created at initilization
+        self.Current_image_index = 0 # move up or down referenced to the CAS massage scrolling direction
+        self.CCueImage = []
+        self.CCueImage.append( Image.open('CCue_360_20.png') )
+        self.CCueImage.append( Image.open('CCue_060_20.png') )
+        self.CCueImage.append( Image.open('CCue_120_20.png') )
+        self.CCueImage.append( Image.open('CCue_180_20.png') )
+        self.CCueImage.append( Image.open('CCue_240_20.png') )
+        self.CCueImage.append( Image.open('CCue_300_20.png') )
 
-               
+
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
      
@@ -192,12 +202,19 @@ class ScrollCanvas():
             
                   
         elif sIndication == 'CCue':
-            # if it is the curlley-cue place place the image into the Canvas
+            # if it is the curlley-cue place place the image into the Canvas.
+            # loop through class images 
             #####################
-            self.CCueImage = Image.open('CCue_20x20.png')
+            self.Current_image_index = self.Current_image_index + gv.event_adder
+            if self.Current_image_index > 5:
+                self.Current_image_index = 0
+            if self.Current_image_index < 0:
+                self.Current_image_index = 5
+
+            # self.CCueImage = Image.open('CCue_20x20.png')
             # Put the image into a canvas compatible class, and stick in an
             # arbitrary variable to the garbage collector doesn't destroy it
-            self.sv.image = ImageTk.PhotoImage( self.CCueImage )
+            self.sv.image = ImageTk.PhotoImage( self.CCueImage[self.Current_image_index] )
             # Add the image to the canvas, and set the anchor to the top left / north west corner
             self.sv.create_image(8, 0, image=self.sv.image, anchor='nw')
             #####################
@@ -503,24 +520,6 @@ class MainWindow(Frame):
         self.CreateCASMsgCanvas()
     #####################################################
     
-    # # script function excuted only once to create the CAS messages canvases
-    # ### use the gv parameters to create the individual canvases for the CAS messages
-    # def CreateScrollCanvas(self):
-    #     return
-    #     # create the canvases if first time through
-    #     for i in range(int(gv.Num_of_Scroll_canvas)):
-    #         sv_offset = i * gv.Scroll_frame_rect[3] # the y distance down from the scroll top point
-    #         # set the individual x, y points for the scroll sv in the dictionary, 
-    #         # key the position in the scroll frame
-    #         gv.Scroll_canvas_pt_dict = { i: (gv.Scroll_canvas_rect[0], 
-    #                                          gv.Scroll_canvas_rect[1] + sv_offset )
-    #                                     }
-    #         # the canvas_list (array of CASMessage class) create each canvas
-    #         gv.Scroll_canvas_list.append( ScrollCanvas( self.Scroll_frame, 
-    #                                                     gv.Scroll_canvas_pt_dict[i] ) )
-    #         # indicate the canvases are now created
-    ################################################################################    
-    
     # initilize the Master buttons         
     def init_MsButtons(self, master_sw_frame):            
         active_bn_colors   = ('red','#ffcccc', 'white')
@@ -597,18 +596,18 @@ class MainWindow(Frame):
         # scroll_event mouse event from wheel
         # top_displayed_msg = 0
         # bot_displayed_msg = 0       
-        event_adder = 0
+        gv.event_adder = 0
         # if scroll_event is positive, msg are scrolling DOWN
         if scroll_event > 0:
-            event_adder = -1
+            gv.event_adder = -1
         elif scroll_event < 0:
-            event_adder = +1
+            gv.event_adder = +1
         else:
-            event_adder = 0
+            gv.event_adder = 0
         #########################################            
         ####### add to the total scrolled msg and check 
         ####### that can't scroll down from top
-        self.scroll_up_down = self.scroll_up_down + event_adder
+        self.scroll_up_down = self.scroll_up_down + gv.event_adder
         if self.scroll_up_down < 0:
             self.scroll_up_down = 0       
         if self.scroll_up_down >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
