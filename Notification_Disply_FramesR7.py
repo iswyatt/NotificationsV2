@@ -502,6 +502,7 @@ class MainWindow(Frame):
                              height  = gv.CAS_frame_rect[3]  ) 
         self.CreateCASMsgCanvas()
     #####################################################
+    
     # # script function excuted only once to create the CAS messages canvases
     # ### use the gv parameters to create the individual canvases for the CAS messages
     # def CreateScrollCanvas(self):
