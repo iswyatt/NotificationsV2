@@ -176,6 +176,9 @@ class ScrollCanvas():
         self.CCueImage.append( Image.open('CCue_180_20.png') )
         self.CCueImage.append( Image.open('CCue_240_20.png') )
         self.CCueImage.append( Image.open('CCue_300_20.png') )
+        ### NOTIFICATION GRAPHIC #############
+        self.Notification_flag = Image.open('stippled.png')
+        self.sv.Notification_image = ImageTk.PhotoImage( self.Notification_flag )
 
 
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
@@ -185,11 +188,12 @@ class ScrollCanvas():
             self.sv.configure( background = 'red' ) 
             self.sv.delete('all') 
             self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = color[0], fill = color[1] )
-        
-            
-            self.the_text = str(9).zfill(2)
-            
-                                                        
+
+            self.sv.create_image(  0, 0, 
+                                   image =  self.sv.Notification_image,
+                                   anchor='nw'  )
+
+            self.the_text = str(9).zfill(2)                                                                  
             # self.sv.move(self.up_triangle, 1, 2)  
             self.sv.create_text(
                 0,                      # x position of the msg text
@@ -198,9 +202,7 @@ class ScrollCanvas():
                 text   = self.the_text,   # text string
                 font   = gv.sym_font,   # the font defined in gv and above if-else
                 anchor = 'nw'  )        # anchor west LEFT justify  
-            
-            
-                  
+                                    
         elif draw == 'CCue':
             # if it is the curlley-cue place place the image into the Canvas.
             # loop through class images 
