@@ -171,10 +171,13 @@ class ScrollCanvas():
         self.up_arrow   = (0+delx, b+dely,    a+delx, b+dely,        (a/2)+delx, 0+dely)
         self.down_arrow = (0+delx, 0+dely,    (a/2)+delx, b+dely,    (a)+delx, 0+dely)
         n_b = 3
-        self.Notificaton_cyan_rectangle = ( gv.Notification_i_rect[0] + n_b,
-                                            gv.Notification_i_rect[1] + n_b,
-                                            gv.Notification_i_rect[1] - 2*n_b,
-                                            gv.Notification_i_rect[1] - 2*n_b                  )
+        self.Notificaton_cyan_rectangle = ( 0 + n_b,
+                                            0 + n_b,
+                                            gv.Notification_i_rect[2] - 2*n_b,
+                                            gv.Notification_i_rect[3] - 2*n_b                  )
+        
+        # self.Notificaton_cyan_rectangle = ( 3,3, 20, 20)
+                                                            
         ##### load all of the CCue images and class variable, created at initilization
         self.Current_image_index = 0 # move up or down referenced to the CAS massage scrolling direction
         self.CCueImage = []
@@ -191,15 +194,22 @@ class ScrollCanvas():
 
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
-        self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'blue' )     
+# self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'blue' )     
         if draw == 'NOTIFICATION_FLAG' :
-            self.sv.configure( background = 'red' ) 
+            self.sv.configure( background = 'black' ) 
             self.sv.delete('all') 
-            self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = color[0], fill = color[1] )
-
+            
             self.sv.create_image(  0, 0, 
                                    image =  self.sv.Notification_image,
-                                   anchor='nw'  )
+                                   anchor='nw'  )            
+            
+            self.up_triangle = self.sv.create_rectangle(  self.Notificaton_cyan_rectangle, 
+                                                        outline = 'cyan',  
+                                                        fill = 'cyan' )
+
+            # self.sv.create_image(  0, 0, 
+            #                        image =  self.sv.Notification_image,
+            #                        anchor='nw'  )
 
             self.the_text = str(9).zfill(2)                                                                  
             # self.sv.move(self.up_triangle, 1, 2)  
@@ -210,7 +220,7 @@ class ScrollCanvas():
                 text   = self.the_text,   # text string
                 font   = gv.sym_font,   # the font defined in gv and above if-else
                 anchor = 'nw'  )        # anchor west LEFT justify  
-            self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'red' )                           
+# self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'red' )                           
         elif draw == 'CCue':
             # if it is the curlley-cue place place the image into the Canvas.
             # loop through class images 
