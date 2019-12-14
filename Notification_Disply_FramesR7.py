@@ -15,7 +15,6 @@ import math
 ##############################################
 root = Tk()
 ##############################################
-# 12-14 Local Change
 # 12-14 08:53 
 class gv_global:
     def __init__(self):
@@ -80,6 +79,9 @@ class gv_global:
         # the points are in a Dictionary where the top point is
         # {0:Point(...), .... }
         self.canvas_pt_dict = {} 
+        #################################################################################
+        # Notification Retangle
+        self.Notification_i_rect = (0,0,0,0)
         #################################################################################        
         ########### set up the fonts and the locations on the canvas ####################
         self.cas_font         = font.Font(family = 'ClearviewADA', size = 20, weight = 'normal')
@@ -168,6 +170,11 @@ class ScrollCanvas():
         dely = 4
         self.up_arrow   = (0+delx, b+dely,    a+delx, b+dely,        (a/2)+delx, 0+dely)
         self.down_arrow = (0+delx, 0+dely,    (a/2)+delx, b+dely,    (a)+delx, 0+dely)
+        n_b = 3
+        self.Notificaton_cyan_rectangle = ( gv.Notification_i_rect[0] + n_b,
+                                            gv.Notification_i_rect[1] + n_b,
+                                            gv.Notification_i_rect[1] - 2*n_b,
+                                            gv.Notification_i_rect[1] - 2*n_b                  )
         ##### load all of the CCue images and class variable, created at initilization
         self.Current_image_index = 0 # move up or down referenced to the CAS massage scrolling direction
         self.CCueImage = []
@@ -178,7 +185,7 @@ class ScrollCanvas():
         self.CCueImage.append( Image.open('CCue_240_20.png') )
         self.CCueImage.append( Image.open('CCue_300_20.png') )
         ### NOTIFICATION GRAPHIC #############
-        self.Notification_flag = Image.open('stipple_only_33_100x100.png')
+        self.Notification_flag = Image.open('stipple_only_50_100x100.png')
         self.sv.Notification_image = ImageTk.PhotoImage( self.Notification_flag )
 
 
@@ -223,13 +230,15 @@ class ScrollCanvas():
             #####################
         else:
             # determin if it is an up or down arrow
-            if draw == 'UP_ARROW':
-                pass
-            elif draw == 'DOWN_ARROW':
-                pass
-            ###
             self.sv.configure( background = color[0] ) 
-            self.sv.delete('all')       
+            self.sv.delete('all') 
+            # determin if it is an up or down arrow
+            if draw == 'UP_ARROW':
+                self.up_triangle = self.sv.create_polygon(  self.up_arrow, outline = color[0], fill = color[1] ) 
+            elif draw == 'DOWN_ARROW':
+                self.down_triangle = self.sv.create_polygon(  self.downup_arrow, outline = color[0], fill = color[1] )
+            ###
+           
             self.sv.create_text(
                 4,                      # x position of the msg text
                 -3,                     # y position of the msg text
@@ -276,12 +285,13 @@ class ScrollIndicator():
             ############
             # Make the last canvas bigger for the notification flag
             if i == (m_NoOfCanvas - 1):
-                i_rect = (  0, 
+                gv.Notification_i_rect = (  0, 
                             i_offset,
                             self.m_Scroll_Canvas_size[0],
                             self.m_Scroll_Canvas_size[1] + m_Added_height_for_notifications )  
             ############
-            self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, i_rect  )  ) 
+            self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
+                                                        gv.Notification_i_rect  )  ) 
     #######################################################################################
     #######################################################################################
     def UpdateScrollIndicator(self): 
@@ -299,7 +309,8 @@ class ScrollIndicator():
                                                         
         else:
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'black'), 
-                                                        sIndication = '   '      )            
+                                                        sIndication = '   ',
+                                                        draw = 'UP_ARROW'       )            
         ################   
         num_of_msg = gv.HTuple[e.CAUTION_no] + gv.HTuple[e.CAUTION_yes]
         if  num_of_msg > 0:         
@@ -308,7 +319,7 @@ class ScrollIndicator():
             else:
                 sColor = ('black', 'yellow')                                              
             self.Scroll_cv_list[e.sAMBER_ABOVE].Update( color = sColor, 
-                                                        sIndication = '\u0044 {}'.format( num_of_msg ))            
+                                                        sIndication = str( num_of_msg ).zfill(2)  )            
         else:
             self.Scroll_cv_list[e.sAMBER_ABOVE].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )                 
@@ -317,7 +328,7 @@ class ScrollIndicator():
         num_of_msg = gv.BTuple[e.ALERT_no] + gv.BTuple[e.ALERT_yes]
         if  num_of_msg > 0:         
             self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'white'), 
-                                                        sIndication = '\u00D1 {}'.format( num_of_msg ))
+                                                        sIndication = str( num_of_msg ).zfill(2) )
         else:
             self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )            
@@ -330,7 +341,7 @@ class ScrollIndicator():
             else:
                 sColor = ('black', 'yellow')                                              
             self.Scroll_cv_list[e.sAMBER_BELOW].Update( color = sColor, 
-                                                        sIndication = '\u00D1 {}'.format( num_of_msg ))            
+                                                        sIndication = str( num_of_msg ).zfill(2) )            
         else:
             self.Scroll_cv_list[e.sAMBER_BELOW].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )  
@@ -344,7 +355,7 @@ class ScrollIndicator():
         else:
             sColor = ('black', 'red')   
         self.Scroll_cv_list[e.sNOTIFICATION].Update( color = sColor, 
-                                                     sIndication = ' {}\n{} '.format( num_of_msg, 123 ), 
+                                                     sIndication = str( num_of_msg ).zfill(2) , 
                                                      draw = 'NOTIFICATION_FLAG')   
 # #########################################################################################
 # The CAS() class is the individual meaasages with the text background and text color.  
