@@ -191,7 +191,7 @@ class ScrollCanvas():
 
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
-     
+        self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'blue' )     
         if draw == 'NOTIFICATION_FLAG' :
             self.sv.configure( background = 'red' ) 
             self.sv.delete('all') 
@@ -210,7 +210,7 @@ class ScrollCanvas():
                 text   = self.the_text,   # text string
                 font   = gv.sym_font,   # the font defined in gv and above if-else
                 anchor = 'nw'  )        # anchor west LEFT justify  
-                                    
+            self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'red' )                           
         elif draw == 'CCue':
             # if it is the curlley-cue place place the image into the Canvas.
             # loop through class images 
@@ -236,7 +236,7 @@ class ScrollCanvas():
             if draw == 'UP_ARROW':
                 self.up_triangle = self.sv.create_polygon(  self.up_arrow, outline = color[0], fill = color[1] ) 
             elif draw == 'DOWN_ARROW':
-                self.down_triangle = self.sv.create_polygon(  self.downup_arrow, outline = color[0], fill = color[1] )
+                self.down_triangle = self.sv.create_polygon(  self.down_arrow, outline = color[0], fill = color[1] )
             ###
            
             self.sv.create_text(
@@ -289,9 +289,14 @@ class ScrollIndicator():
                             i_offset,
                             self.m_Scroll_Canvas_size[0],
                             self.m_Scroll_Canvas_size[1] + m_Added_height_for_notifications )  
-            ############
-            self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
+            
+                self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
                                                         gv.Notification_i_rect  )  ) 
+            ############
+            else:
+                self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
+                                                            i_rect  )  )     
+                
     #######################################################################################
     #######################################################################################
     def UpdateScrollIndicator(self): 
@@ -319,7 +324,8 @@ class ScrollIndicator():
             else:
                 sColor = ('black', 'yellow')                                              
             self.Scroll_cv_list[e.sAMBER_ABOVE].Update( color = sColor, 
-                                                        sIndication = str( num_of_msg ).zfill(2)  )            
+                                                        sIndication = str( num_of_msg ).zfill(2), 
+                                                        draw = 'UP_ARROW'  )            
         else:
             self.Scroll_cv_list[e.sAMBER_ABOVE].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )                 
@@ -328,7 +334,8 @@ class ScrollIndicator():
         num_of_msg = gv.BTuple[e.ALERT_no] + gv.BTuple[e.ALERT_yes]
         if  num_of_msg > 0:         
             self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'white'), 
-                                                        sIndication = str( num_of_msg ).zfill(2) )
+                                                        sIndication = str( num_of_msg ).zfill(2), 
+                                                        draw = 'DOWN_ARROW' )
         else:
             self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )            
@@ -341,7 +348,8 @@ class ScrollIndicator():
             else:
                 sColor = ('black', 'yellow')                                              
             self.Scroll_cv_list[e.sAMBER_BELOW].Update( color = sColor, 
-                                                        sIndication = str( num_of_msg ).zfill(2) )            
+                                                        sIndication = str( num_of_msg ).zfill(2),
+                                                        draw = 'DOWN_ARROW'  )            
         else:
             self.Scroll_cv_list[e.sAMBER_BELOW].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )  
@@ -667,7 +675,7 @@ class MainWindow(Frame):
                                                                             gv.BTuple[e.ALERT_yes]
                                                                             )
         StatusBar.configure(text = tx0+ '  ' + tx1 )
-        
+
         self.si.UpdateScrollIndicator()
         
         # ##################################################################### 
