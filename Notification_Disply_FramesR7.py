@@ -177,7 +177,7 @@ class ScrollCanvas():
         self.CCueImage.append( Image.open('CCue_240_20.png') )
         self.CCueImage.append( Image.open('CCue_300_20.png') )
         ### NOTIFICATION GRAPHIC #############
-        self.Notification_flag = Image.open('stippled.png')
+        self.Notification_flag = Image.open('stipple_only_33_100x100.png')
         self.sv.Notification_image = ImageTk.PhotoImage( self.Notification_flag )
 
 
@@ -243,7 +243,7 @@ class ScrollIndicator():
         self.m_contex = contex 
         pad = 10
         m_NoOfCanvas=   6        
-        m_Added_height_for_notifications = 25
+        m_Added_height_for_notifications = 34.8
         m_Height    =   (gv.CAS_frame_bpt[1] - gv.CAS_frame_tpt[1])/2
 
         m_Width     =   gv.CAS_Image_Width - ( gv.CAS_frame_bpt[0] + int(pad *1.7))   #50               
@@ -694,9 +694,10 @@ class Notifications:
                         highlightthickness=0,
                         background = 'blue')
         self.wn.create_image(0,0, image = self.stippleNoteL, anchor = 'nw')
-        self.wn_y = gv.CAS_frame_rect[e.height]/2
-        self.wn.place(x=0, y=self.wn_y)
-        self.Anamation()
+        self.wn_y = gv.CAS_frame_rect[e.height]*2##/2
+        self.Notification_zero = gv.CAS_frame_rect[e.height]
+        self.wn.place(x=0, y=self.Notification_zero )
+        # self.Anamation()
 
     def Anamation(self):   
     #     The notification messags will anamate up from the bottom of the case window
@@ -715,6 +716,10 @@ class Notifications:
                     text   = 'FMS1/2: NEW LINE ',  # text string
                     font   = gv.noti_font,               # the font defined in gv and above if-else
                     anchor = 'nw'  )                  # anchor west LEFT justify        
+        
+        self.wn_y =  self.Notification_zero * 0.8
+        
+        self.wn.place(x=0, y=self.wn_y)
                    
 nt = Notifications() 
 #########################################################################################
@@ -754,8 +759,12 @@ delta = 1
 wn_y = bottom-ht-1
 adder = 0
 def f_loop():
+    # nt.Anamation()    
+    # global wn_y    
+    # nt.wn.place(x=0, y=wn_y)
+    return
     # stepper = 1 #gv.CAS_frame_rect[3]/6
-    global wn_y
+    # global wn_y
     global st_counter
     global delta
     global adder 
@@ -799,4 +808,8 @@ StatusBar.pack(side=BOTTOM, fill=X)
 # si.UpdateScrollIndicator()
 appWin.ScrollCAS(0)
 appWin.MessageController()
+nt.Anamation()
+# wn_y = 0
+# nt.wn.place(x=0, y=wn_y)
+
 mainloop()
