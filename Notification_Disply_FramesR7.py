@@ -294,7 +294,7 @@ class ScrollIndicator():
         if  num_of_msg > 0:         
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'white'), 
                                                         sIndication = str(num_of_msg).zfill(2),
-                                                        drew = 'UP_ARROW' )
+                                                        draw = 'UP_ARROW' )
                                                         
         else:
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'black'), 
