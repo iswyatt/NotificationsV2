@@ -15,7 +15,7 @@ import math
 ##############################################
 root = Tk()
 ##############################################
-# 12-14 08:53 
+# 12-15 806
 class gv_global:
     def __init__(self):
         # Three values determin the size of the main window
