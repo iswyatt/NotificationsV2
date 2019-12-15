@@ -1,8 +1,9 @@
 from MyEnumerations import e
+# import Notification_Disply_FramesR7 
 import datetime
 current_time  = datetime.datetime.now().strftime('%H%M%S')
 ######################################################################################################
-USE_CASE = 3
+USE_CASE = 0
 if USE_CASE == 0:
     UC_active_CAS = [  
                     ['11: UN-ACKNOWLEDGED RED CAS', 'WARNING',  'no_ACKNOWLEDGED',  current_time],
@@ -59,9 +60,9 @@ if USE_CASE == 2:
                
 if USE_CASE == 3:
     UC_active_CAS = [  
-                    ['80 FIRE: LH+RH WHEEL OVHT', 'WARNING',    'yes_ACKNOWLEDGED',  'post_time'],
+                    ['80 FIRE: LH+RH WHEEL OVHT', 'CAUTION',    'yes_ACKNOWLEDGED',  'post_time'],
                     ['90 PRESS: CABIN ALT TOO HI','CAUTION',    'no_ACKNOWLEDGED',   'post_time'], 
-                    ['08 BLEED: 1 OVHT',          'WARNING',    'no_ACKNOWLEDGED',   'post_time'], 
+                    ['08 BLEED: 1 OVHT',          'CAUTION',    'no_ACKNOWLEDGED',   'post_time'], 
                     ['15 COND: AFT FCS BOX OVHT', 'CAUTION',    'yes_ACKNOWLEDGED',  'post_time'], 
                     ['0 NOTIFICATION',              'AA_NOTI',    'yes_ACKNOWLEDGED',   'post_time'], 
                     ['1 NOTIFICATION',              'AA_NOTI',    'yes_ACKNOWLEDGED',   'post_time'], 
@@ -72,7 +73,7 @@ if USE_CASE == 3:
                     ['6 NOTIFICATION',              'AA_NOTI',    'yes_ACKNOWLEDGED',   'post_time'], 
                     ['7 NOTIFICATION',              'AA_NOTI',    'no_ACKNOWLEDGED',   'post_time'], 
                     ['8 NOTIFICATION',              'AA_NOTI',    'yes_ACKNOWLEDGED',  'post_time'], 
-                    ['26 ELEC: AFT DIST BOX OVHT','WARNING',    'yes_ACKNOWLEDGED',  'post_time'],  
+                    ['26 ELEC: AFT DIST BOX OVHT','CAUTION',    'yes_ACKNOWLEDGED',  'post_time'],  
                     ['15 COND: AFT FCS BOX OVHT', 'ALERT',      'yes_ACKNOWLEDGED',  'post_time'],  
                     ['26 ELEC: AFT DIST BOX OVHT','ALERT',      'no_ACKNOWLEDGED',   'post_time']      
                     ]
@@ -163,16 +164,23 @@ class CASCount():
             self.ALERT_no    = ALERT_no
             self.ALERT_yes   = ALERT_yes
             self.NOTIFICATION_no  = NOTIFICATION_no
-            self.NOTIFICATION_yes = NOTIFICATION_yes                 
-            # The return value is a Tuple with the number of CAS messages
-            # in various catagories. The numbers are filutered by the Range [top:bottom] perameter
-            # The default argument will complie data for the entire list database
-            # The print_CAS_enumerations(rtn): above will print the tuple values with labels.                
+            self.NOTIFICATION_yes = NOTIFICATION_yes 
+            self.AllCasTuple =  ( WARNING_no, WARNING_yes, 
+                                CAUTION_no, CAUTION_yes, 
+                                ALERT_no, ALERT_yes,
+                                NOTIFICATION_no, NOTIFICATION_yes,
+                                self.END_of_CAS_MSG,  self.TOTAL_NO_MSG ) 
+                
+        # The return value is a Tuple with the number of CAS messages
+        # in various catagories. The numbers are filutered by the Range [top:bottom] perameter
+        # The default argument will complie data for the entire list database
+        # The print_CAS_enumerations(rtn): above will print the tuple values with labels.                
         rtn =  (WARNING_no, WARNING_yes, 
                 CAUTION_no, CAUTION_yes, 
                 ALERT_no, ALERT_yes,
                 NOTIFICATION_no, NOTIFICATION_yes,
-                self.END_of_CAS_MSG,  self.TOTAL_NO_MSG )        
+                self.END_of_CAS_MSG,  self.TOTAL_NO_MSG ) 
+      
         # print_CAS_enumerations(rtn)
         return(rtn)
 

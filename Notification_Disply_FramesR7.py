@@ -35,6 +35,7 @@ class gv_global:
         self.HTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
         self.STuple = (0,0,0,0,0,0,0,0)     #tuple # on screen CAS count
         self.BTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen below CAS count
+        self.AllowScrolling = False         # red CAS can't be scrolled, controlls CCue
         self.event_adder = 0 # global scroll direction indicator, mouse wheel event driven
         ##################################################################################
         self.ImageSize    = (self.CAS_Image_Width, self.CAS_Image_Height)
@@ -90,7 +91,7 @@ class gv_global:
         self.but_font         = font.Font(family = 'ClearviewADA', size = 13, weight = 'bold'  )
         self.frame_label_font = font.Font(family = 'ClearviewADA', size = 11, weight = 'bold') 
         self.sym_font         = font.Font(family = 'ClearviewADA', size = 16, weight = 'normal')   
-        # self.sym_font         = font.Font(family = 'Symbol', size = 16, weight = 'normal')        
+        self.sym_Noti_flag         = font.Font(family = 'Arial Narrow', size = 16, weight = 'normal')        
         ### CAS text ####################################################################
         font_ascent_scaler = 0.6
         self.cas_text_y = self.cas_font.metrics()['ascent'] * font_ascent_scaler
@@ -176,8 +177,6 @@ class ScrollCanvas():
                                             gv.Notification_i_rect[2] - 1*n_b,
                                             gv.Notification_i_rect[3] - 1*n_b                  )
         
-        # self.Notificaton_cyan_rectangle = ( 3,3, 20, 20)
-                                                            
         ##### load all of the CCue images and class variable, created at initilization
         self.Current_image_index = 0 # move up or down referenced to the CAS massage scrolling direction
         self.CCueImage = []
@@ -191,17 +190,16 @@ class ScrollCanvas():
         self.Notification_flag = Image.open('stipple_only_50_100x100.png')
         self.sv.Notification_image = ImageTk.PhotoImage( self.Notification_flag )
 
-
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
-# self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'blue' )     
         if (draw == 'NOTIFICATION_FLAG'):
             self.sv.configure( background = 'black' ) 
             self.sv.delete('all') 
             if (int(sIndication) >=2):
-                # self.sv.configure( background = 'black' ) 
-                # self.sv.delete('all') 
-                #notification stippled image
+                # the number of notification messages must be greater that one 
+                # to show the notification flag. 
+                #notification stippled image is displayed, and then over it is a cyan 
+                # retangle wher the number of hidden messages is indicated. 
                 self.sv.create_image(  0, 0, 
                                     image =  self.sv.Notification_image,
                                     anchor='nw'  )            
@@ -209,35 +207,41 @@ class ScrollCanvas():
                 self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
                                                                 outline = 'cyan',  
                                                                 fill    = 'cyan' )
-                line0 = '1/{}'.format(sIndication) # can only be one charactor long                                                              
+                # test format to show the number of messages on-deck with 1 or number
+                Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
                 y_spaceing = 6
-                x_spaceing = 4 
+                x_spaceing = 8 
                 self.sv.create_text(
                     x_spaceing,                      # x position of the msg text
                     y_spaceing,                      # y position of the msg text
                     fill   = 'black',                # text color
-                    text   = line0,                  # text string
-                    font   = gv.sym_font,   # the font defined in gv and above if-else
-                    anchor = 'nw'  )        # anchor west LEFT justify  
+                    text   = Noti_1_of_num,          # text string
+                    font   = gv.sym_Noti_flag,       # the font defined in gv and above if-else
+                    anchor = 'nw'  )                 # anchor west LEFT justify  
                 down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
                 self.sv.move(down_triangle, -12, 30)
             else:
                 return 
                          
         elif draw == 'CCue':
-            # if it is the curlley-cue place place the image into the Canvas.
-            # loop through class images 
-            #####################
-            self.Current_image_index = self.Current_image_index + gv.event_adder
-            if self.Current_image_index > 5:
-                self.Current_image_index = 0
-            if self.Current_image_index < 0:
-                self.Current_image_index = 5
-            # Put the image into a canvas compatible class, and stick in an
-            # arbitrary variable to the garbage collector doesn't destroy it
-            self.sv.image = ImageTk.PhotoImage( self.CCueImage[self.Current_image_index] )
-            # Add the image to the canvas, and set the anchor to the top left / north west corner
-            self.sv.create_image(8, 0, image=self.sv.image, anchor='nw')
+            if gv.AllowScrolling == True:
+                # if it is the curlley-cue place place the image into the Canvas.
+                # loop through class images 
+                #####################
+                self.Current_image_index = self.Current_image_index + gv.event_adder
+                if self.Current_image_index > 5:
+                    self.Current_image_index = 0
+                if self.Current_image_index < 0:
+                    self.Current_image_index = 5
+                # Put the image into a canvas compatible class, and stick in an
+                # arbitrary variable to the garbage collector doesn't destroy it
+                self.sv.image = ImageTk.PhotoImage( self.CCueImage[self.Current_image_index] )
+                # Add the image to the canvas, and set the anchor to the top left / north west corner
+                self.sv.create_image(8, 0, image=self.sv.image, anchor='nw')
+            else:
+                # the old CCue must be erased so that the atea will be blank 
+                self.sv.configure( background = 'black' ) 
+                self.sv.delete('all') 
             #####################
         else:
             # determin if it is an up or down arrow
@@ -247,9 +251,7 @@ class ScrollCanvas():
             if draw == 'UP_ARROW':
                 self.up_triangle = self.sv.create_polygon(  self.up_arrow, outline = color[0], fill = color[1] ) 
             elif draw == 'DOWN_ARROW':
-                self.down_triangle = self.sv.create_polygon(  self.down_arrow, outline = color[0], fill = color[1] )
-            ###
-           
+                self.down_triangle = self.sv.create_polygon(  self.down_arrow, outline = color[0], fill = color[1] )          
             self.sv.create_text(
                 4,                      # x position of the msg text
                 -3,                     # y position of the msg text
@@ -650,6 +652,17 @@ class MainWindow(Frame):
         ####### add to the total scrolled msg and check 
         ####### that can't scroll down from top
         self.scroll_up_down = self.scroll_up_down + gv.event_adder
+        ###################################################
+        # record the number of red CAS in the active DB. 
+        # if there are any red, there is no scrolling,
+        # the CCue icon should not be show.
+        if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
+            self.scroll_up_down = 0
+            gv.AllowScrolling = False
+        else:
+            gv.AllowScrolling = True
+        # #######################################################
+        
         if self.scroll_up_down < 0:
             self.scroll_up_down = 0       
         if self.scroll_up_down >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
