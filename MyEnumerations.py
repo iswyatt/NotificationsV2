@@ -32,8 +32,8 @@ class enummerations():
         self.sAMBER_ABOVE    = 1        
         self.sWHITE_ABOVE    = 0
         self.sCURLY_CUE      = 2        
-        self.sWHITE_BELOW    = 4        
-        self.sAMBER_BELOW    = 3                
+        self.sWHITE_BELOW    = 3        
+        self.sAMBER_BELOW    = 4                
         self.sNOTIFICATION   = 5
 #######################################    
 e = enummerations()

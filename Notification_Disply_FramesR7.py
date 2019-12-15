@@ -166,7 +166,7 @@ class ScrollCanvas():
         #### Up and Down Arrow Shapes ##################
         a = 13 # length of arrow lines
         b = math.sqrt(0.75)*a
-        delx = 26
+        delx = 29
         dely = 4
         self.up_arrow   = (0+delx, b+dely,    a+delx, b+dely,        (a/2)+delx, 0+dely)
         self.down_arrow = (0+delx, 0+dely,    (a/2)+delx, b+dely,    (a)+delx, 0+dely)
@@ -220,7 +220,7 @@ class ScrollCanvas():
                     font   = gv.sym_font,   # the font defined in gv and above if-else
                     anchor = 'nw'  )        # anchor west LEFT justify  
                 down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
-                self.sv.move(down_triangle, -9, 30)
+                self.sv.move(down_triangle, -12, 30)
             else:
                 return 
                          
