@@ -171,10 +171,10 @@ class ScrollCanvas():
         self.up_arrow   = (0+delx, b+dely,    a+delx, b+dely,        (a/2)+delx, 0+dely)
         self.down_arrow = (0+delx, 0+dely,    (a/2)+delx, b+dely,    (a)+delx, 0+dely)
         n_b = 3
-        self.Notificaton_cyan_rectangle = ( 0 + n_b,
+        self.Notificaton_cyan_rect = ( 0 + n_b,
                                             0 + n_b,
-                                            gv.Notification_i_rect[2] - 2*n_b,
-                                            gv.Notification_i_rect[3] - 2*n_b                  )
+                                            gv.Notification_i_rect[2] - 1*n_b,
+                                            gv.Notification_i_rect[3] - 1*n_b                  )
         
         # self.Notificaton_cyan_rectangle = ( 3,3, 20, 20)
                                                             
@@ -195,32 +195,35 @@ class ScrollCanvas():
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
 # self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'blue' )     
-        if draw == 'NOTIFICATION_FLAG' :
+        if (draw == 'NOTIFICATION_FLAG'):
             self.sv.configure( background = 'black' ) 
             self.sv.delete('all') 
-            
-            self.sv.create_image(  0, 0, 
-                                   image =  self.sv.Notification_image,
-                                   anchor='nw'  )            
-            
-            self.up_triangle = self.sv.create_rectangle(  self.Notificaton_cyan_rectangle, 
-                                                        outline = 'cyan',  
-                                                        fill = 'cyan' )
-
-            # self.sv.create_image(  0, 0, 
-            #                        image =  self.sv.Notification_image,
-            #                        anchor='nw'  )
-
-            self.the_text = str(9).zfill(2)                                                                  
-            # self.sv.move(self.up_triangle, 1, 2)  
-            self.sv.create_text(
-                0,                      # x position of the msg text
-                -2,                     # y position of the msg text
-                fill   = 'yellow',      # text color
-                text   = self.the_text,   # text string
-                font   = gv.sym_font,   # the font defined in gv and above if-else
-                anchor = 'nw'  )        # anchor west LEFT justify  
-# self.up_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'white', fill = 'red' )                           
+            if (int(sIndication) >=2):
+                # self.sv.configure( background = 'black' ) 
+                # self.sv.delete('all') 
+                #notification stippled image
+                self.sv.create_image(  0, 0, 
+                                    image =  self.sv.Notification_image,
+                                    anchor='nw'  )            
+                #Cyan rectangle overlaying the stippled image
+                self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
+                                                                outline = 'cyan',  
+                                                                fill    = 'cyan' )
+                line0 = '1/{}'.format(sIndication) # can only be one charactor long                                                              
+                y_spaceing = 6
+                x_spaceing = 4 
+                self.sv.create_text(
+                    x_spaceing,                      # x position of the msg text
+                    y_spaceing,                      # y position of the msg text
+                    fill   = 'black',                # text color
+                    text   = line0,                  # text string
+                    font   = gv.sym_font,   # the font defined in gv and above if-else
+                    anchor = 'nw'  )        # anchor west LEFT justify  
+                down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
+                self.sv.move(down_triangle, -9, 30)
+            else:
+                return 
+                         
         elif draw == 'CCue':
             # if it is the curlley-cue place place the image into the Canvas.
             # loop through class images 
@@ -230,8 +233,6 @@ class ScrollCanvas():
                 self.Current_image_index = 0
             if self.Current_image_index < 0:
                 self.Current_image_index = 5
-
-            # self.CCueImage = Image.open('CCue_20x20.png')
             # Put the image into a canvas compatible class, and stick in an
             # arbitrary variable to the garbage collector doesn't destroy it
             self.sv.image = ImageTk.PhotoImage( self.CCueImage[self.Current_image_index] )
@@ -301,7 +302,7 @@ class ScrollIndicator():
                             self.m_Scroll_Canvas_size[1] + m_Added_height_for_notifications )  
             
                 self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
-                                                        gv.Notification_i_rect  )  ) 
+                                                            gv.Notification_i_rect  )  ) 
             ############
             else:
                 self.Scroll_cv_list.append( ScrollCanvas(   self.m_Scroll_frame, 
@@ -320,8 +321,7 @@ class ScrollIndicator():
         if  num_of_msg > 0:         
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'white'), 
                                                         sIndication = str(num_of_msg).zfill(2),
-                                                        draw = 'UP_ARROW' )
-                                                        
+                                                        draw = 'UP_ARROW' )                                                       
         else:
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'black'), 
                                                         sIndication = '   ',
@@ -363,7 +363,6 @@ class ScrollIndicator():
         else:
             self.Scroll_cv_list[e.sAMBER_BELOW].Update( color = ('black', 'black'), 
                                                         sIndication = '   '      )  
-
         ################
         # NOTIFICATION
         # total number of Notification messages
@@ -371,9 +370,9 @@ class ScrollIndicator():
         if num_of_msg > 0:
             sColor = ( 'cyan', 'black')
         else:
-            sColor = ('black', 'red')   
+            sColor = ('cyan', 'cyan')   
         self.Scroll_cv_list[e.sNOTIFICATION].Update( color = sColor, 
-                                                     sIndication = str( num_of_msg ).zfill(2) , 
+                                                     sIndication = str( num_of_msg ).zfill(1) , 
                                                      draw = 'NOTIFICATION_FLAG')   
 # #########################################################################################
 # The CAS() class is the individual meaasages with the text background and text color.  

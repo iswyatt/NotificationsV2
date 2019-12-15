@@ -29,8 +29,8 @@ class enummerations():
         
         ####### ScrollIndicator Canvas ##################
         ## 5 is a bottom--> 0 is top canvas
-        self.sAMBER_ABOVE    = 0        
-        self.sWHITE_ABOVE    = 1
+        self.sAMBER_ABOVE    = 1        
+        self.sWHITE_ABOVE    = 0
         self.sCURLY_CUE      = 2        
         self.sWHITE_BELOW    = 4        
         self.sAMBER_BELOW    = 3                
