@@ -104,6 +104,9 @@ class gv_global:
         #############################################
 gv = gv_global()
 #########################################################################################
+# This function respons to pressing one of the Master Buttons to acknowlege messages by 
+# calling the activeCAS Acknowlege function. 
+# Status is true from 
 def MasterButtonCallback(bt_id, status):
     if status == True:
         ac.Ackknowlege_CAS(bt_id)
@@ -638,8 +641,6 @@ class MainWindow(Frame):
     #############################################################################
     def ScrollCAS(self, scroll_event = 0):
         # scroll_event mouse event from wheel
-        # top_displayed_msg = 0
-        # bot_displayed_msg = 0       
         gv.event_adder = 0
         # if scroll_event is positive, msg are scrolling DOWN
         if scroll_event > 0:
@@ -850,7 +851,7 @@ StatusBar.pack(side=BOTTOM, fill=X)
 # si.UpdateScrollIndicator()
 appWin.ScrollCAS(0)
 appWin.MessageController()
-nt.Anamation()
+# nt.Anamation()
 # wn_y = 0
 # nt.wn.place(x=0, y=wn_y)
 

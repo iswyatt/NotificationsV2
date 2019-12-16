@@ -1,5 +1,5 @@
 from MyEnumerations import e
-# import Notification_Disply_FramesR7 
+
 import datetime
 current_time  = datetime.datetime.now().strftime('%H%M%S')
 ######################################################################################################
@@ -106,6 +106,7 @@ def print_CAS_enumerations(rtn):
 
 class CASCount():
     def __init__(self):
+        #from  Notification_Disply_FramesR7 import gv 
         self.WARNING_no  = 0
         self.WARNING_yes = 0
         self.CAUTION_no  = 0
@@ -117,7 +118,7 @@ class CASCount():
         self.END_of_CAS_MSG = 0        
         self.TOTAL_NO_MSG     = 0
         
-    def Count_active_CAS(self, top = 0, bottom = 100):       
+    def Count_active_CAS(self, top = 0, bottom = 100):     
         WARNING_no = 0
         WARNING_yes = 0
         CAUTION_no = 0
@@ -153,7 +154,7 @@ class CASCount():
                 NOTIFICATION_yes     =  NOTIFICATION_yes +1  
             
         if bottom >=100: ## 100 is the default value; the entire string list is couted
-                         ## the counted values are places into the class variables
+                         ## the counted values are places into the class variables                        
             self.TOTAL_NO_MSG = len(active_CAS)               
             self.END_of_CAS_MSG =  WARNING_no + WARNING_yes + CAUTION_no
             self.END_of_CAS_MSG =  self.END_of_CAS_MSG + CAUTION_yes + ALERT_no + ALERT_yes
@@ -195,8 +196,9 @@ print(rtn)
 print_CAS_enumerations(rtn)
 
 def Ackknowlege_CAS(bt_id):
-    # temp_remove = []
-    # temp_append = []
+    # the function is called when a master button is pressed or 
+    # when the status of any meaasge is changes, i.e. auto akc of a white CAS 
+    
     
     if bt_id == e.id_WARNING:
 
