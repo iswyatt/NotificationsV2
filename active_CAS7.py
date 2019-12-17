@@ -1,7 +1,7 @@
 from MyEnumerations import e
 
-import datetime
-current_time  = datetime.datetime.now().strftime('%H%M%S')
+import time
+current_time  = time.time() #.strftime('%H%M%S')
 ######################################################################################################
 USE_CASE = 0
 if USE_CASE == 0:

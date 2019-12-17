@@ -12,6 +12,7 @@ os.system('cls')
 import active_CAS7 as ac
 from MyEnumerations import e
 import math
+from threading import Timer
 ##############################################
 root = Tk()
 ##############################################
@@ -32,9 +33,10 @@ class gv_global:
         self.possable_num_of_CASMsg = 10
         ##################################################################################
         ########### screen Tuples filled in the scroll method ##########################
-        self.HTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
-        self.STuple = (0,0,0,0,0,0,0,0)     #tuple # on screen CAS count
-        self.BTuple = (0,0,0,0,0,0,0,0)     #tuple # off screen below CAS count
+        self.HTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
+        self.STuple =   (0,0,0,0,0,0,0,0)     #tuple # on screen CAS count
+        self.BTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen below CAS count
+        self.CASTuple = (0,0,0,0,0,0,0,0)     #tuple # of ALL CAS message, 
         self.AllowScrolling = False         # red CAS can't be scrolled, controlls CCue
         self.event_adder = 0 # global scroll direction indicator, mouse wheel event driven
         ##################################################################################
@@ -125,7 +127,8 @@ class MasterButton(Button):
         self.inactive_color = inactive_color
         self.displayed_colors = self.inactive_color
         self.active_status = False
-        #self.Icallback = Icallback       
+
+     
         self.bn_geometry = (12, 2 , 5, 15) #button geomerty(width, height, borderwidth, padx)                  
         self.configure( font        = gv.but_font )
         self.configure( width       = self.bn_geometry[0])
@@ -151,7 +154,8 @@ class MasterButton(Button):
         return self.active_status
     
     def bn_callback(self):
-        print('Class Method callback from:: id={} status={}'.format( self.id, self.active_status ))
+        # Each MasterButton class instance takes the mouse action itself (the button click) 
+        # and passes the action on to the MasterButtonCallback
         MasterButtonCallback(self.id, self.active_status)
 ##############################################################################
 class ScrollCanvas():
@@ -502,6 +506,9 @@ class MainWindow(Frame):
         self.CAUTION_bn_status  = False
         self.NOTIFICATION_bn_status  = False 
         self.scroll_up_down = 0 # the scroll position in the CAS window, from top of list
+        
+        # self.alert_timer = Timer(interval = 5, 
+        #                          function = self.startup_status_master_buttons)
 
         ########### CAS message indexes for on screen and high/low off screen. ##########
         self.CAS_on_screen = (0,0) # the top and botton active_CAS messages on the screen
@@ -620,24 +627,46 @@ class MainWindow(Frame):
     def startup_status_master_buttons(self):
         self.WARNING_bn.SetStatusActive(False)
         self.CAUTION_bn.SetStatusActive(False)
-        self.NOTIFICATION_bn.SetStatusActive(False)        
+        self.NOTIFICATION_bn.SetStatusActive(False) 
+        print('======================================'*10)       
     ################################################################################        
     def MessageController(self):
-        rtn = ac.mMsg_count.Count_active_CAS()
-        status = BooleanVar
-        if rtn[e.WARNING_no] > 0:
+        gv.CASTuple = ac.mMsg_count.Count_active_CAS()
+        ############################################
+        status = BooleanVar # true is an un Ack message exists.
+        ### WARNING_No messages
+        if gv.CASTuple[e.WARNING_no] > 0:
             status = True
         else:
             status = False
-            # activate the WARNING master switch
+        # activate the WARNING master switch
         self.WARNING_bn_status = self.WARNING_bn.SetStatusActive(status)
-               
-        if rtn[e.CAUTION_no] > 0:
+        ### CAUTION_No messages               
+        if gv.CASTuple[e.CAUTION_no] > 0:
             status = True
         else:
             status = False
             # activate the CAUTION master switch
         self.CAUTION_bn_status = self.CAUTION_bn.SetStatusActive(status)
+        ### ALERT WHITE CAS are auto acknowloged, if present start a 5 secont timer.
+        ### ALERT_No messages               
+        if gv.CASTuple[e.ALERT_no] > 0:
+            ack_time = time.time() - 15
+            local_notif = [ row for row in ac.active_CAS if ( row[1]=='AA_NOTI') and 
+                                                            ( row[2]=='no_ACKNOWLEDGED') and
+                                                            ( row[3] <= ack_time) ]
+
+            print(local_notif)
+
+            for row in local_notif:
+                row[2] = 'yes_ACKNOWLEDGED'
+               
+            print(local_notif)
+        print(ack_time)
+        
+        
+        
+        
     #############################################################################
     def ScrollCAS(self, scroll_event = 0):
         # scroll_event mouse event from wheel
@@ -657,11 +686,11 @@ class MainWindow(Frame):
         # record the number of red CAS in the active DB. 
         # if there are any red, there is no scrolling,
         # the CCue icon should not be show.
-        if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
-            self.scroll_up_down = 0
-            gv.AllowScrolling = False
-        else:
-            gv.AllowScrolling = True
+        # if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
+        #     self.scroll_up_down = 0
+        #     gv.AllowScrolling = False
+        # else:
+        #     gv.AllowScrolling = True
         # #######################################################
         
         if self.scroll_up_down < 0:
