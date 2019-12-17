@@ -3,7 +3,7 @@ from MyEnumerations import e
 import time
 current_time  = time.time() #.strftime('%H%M%S')
 ######################################################################################################
-USE_CASE = 0
+USE_CASE = 2
 if USE_CASE == 0:
     UC_active_CAS = [  
                     ['11: UN-ACKNOWLEDGED RED CAS', 'WARNING',  'no_ACKNOWLEDGED',  current_time],
@@ -54,9 +54,18 @@ if USE_CASE == 1:
                     ('26 ELEC: AFT DIST BOX OVHT','ALERT',      'no_ACKNOWLEDGED',   'post_time')      ]
 
 if USE_CASE == 2:
-    UC_active_CAS = [  ('80 FIRE: LH+RH WHEEL OVHT', 'WARNING',    'no_ACKNOWLEDGED',  'post_time'),
-                    ('801 FIRE: LH+RH WHEEL OVHT', 'WARNING',    'no_ACKNOWLEDGED',  'post_time'),
-                    ( 'END', 'AA last in sort', 'ZZ to be last in sort', 'na')]
+    UC_active_CAS = [   
+                        ['80 FIRE: LH+RH WHEEL OVHT',  'CAUTION',    'no_ACKNOWLEDGED',  current_time],
+                        ['801 FIRE: LH+RH WHEEL OVHT', 'CAUTION',    'no_ACKNOWLEDGED',  current_time],
+                        [ 'Alert 01'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+0.0],
+                        [ 'Alert 02'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+2.0],                        
+                        [ 'Alert 03'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+4.0],  
+                        [ 'Alert 04'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+6.0    ],
+                        [ 'Alert 05'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+7.0],                            
+                        [ 'Alert 06'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+10.0    ],
+                        [ 'Alert 07'                ,   'ALERT'  ,   'no_ACKNOWLEDGED',  current_time+8.0],                            
+                        
+                        ]
                
 if USE_CASE == 3:
     UC_active_CAS = [  

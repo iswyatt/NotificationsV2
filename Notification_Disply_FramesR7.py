@@ -31,6 +31,8 @@ class gv_global:
         self.statusbar_height       = 12 # pixcels, indicate as a -height to be in pix
         # the number of cas messages in the cas frame
         self.possable_num_of_CASMsg = 10
+        # the time in seconds to automaticely ack an ALERT CAS message
+        self.ALERT_msg_auto_ack = 10 #seconds
         ##################################################################################
         ########### screen Tuples filled in the scroll method ##########################
         self.HTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
@@ -327,12 +329,19 @@ class ScrollIndicator():
                                                   draw          = 'CCue'          )
         ################          
         num_of_msg = gv.HTuple[e.ALERT_no] + gv.HTuple[e.ALERT_yes]
-        if  num_of_msg > 0:         
-            self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'white'), 
+        if  num_of_msg > 0: 
+               
+            if  gv.HTuple[e.ALERT_no] > 0:
+                sColor = ('white', 'black')            
+            else:
+                sColor = ('black', 'white')   
+            
+                 
+            self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = sColor, 
                                                         sIndication = str(num_of_msg).zfill(2),
                                                         draw = 'UP_ARROW' )                                                       
         else:
-            self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = ('black', 'black'), 
+            self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = sColor, 
                                                         sIndication = '   ',
                                                         draw = 'UP_ARROW'       )            
         ################   
@@ -627,8 +636,7 @@ class MainWindow(Frame):
     def startup_status_master_buttons(self):
         self.WARNING_bn.SetStatusActive(False)
         self.CAUTION_bn.SetStatusActive(False)
-        self.NOTIFICATION_bn.SetStatusActive(False) 
-        print('======================================'*10)       
+        self.NOTIFICATION_bn.SetStatusActive(False)    
     ################################################################################        
     def MessageController(self):
         gv.CASTuple = ac.mMsg_count.Count_active_CAS()
@@ -648,24 +656,23 @@ class MainWindow(Frame):
             status = False
             # activate the CAUTION master switch
         self.CAUTION_bn_status = self.CAUTION_bn.SetStatusActive(status)
-        ### ALERT WHITE CAS are auto acknowloged, if present start a 5 secont timer.
+        ###########################################################################
+        ### ALERT WHITE CAS are auto acknowloged, if present start a 5 second timer.
         ### ALERT_No messages               
         if gv.CASTuple[e.ALERT_no] > 0:
-            ack_time = time.time() - 15
-            local_notif = [ row for row in ac.active_CAS if ( row[1]=='AA_NOTI') and 
-                                                            ( row[2]=='no_ACKNOWLEDGED') and
-                                                            ( row[3] <= ack_time) ]
-
-            print(local_notif)
-
-            for row in local_notif:
-                row[2] = 'yes_ACKNOWLEDGED'
-            
-            ac.CAS_Messages_Sort()   
-            print(local_notif)
-        print(ack_time)
-        
-        
+            ack_time = time.time() - gv.ALERT_msg_auto_ack
+            ALERT_ACKNOWLEDGED_redraw_CAS = False # when time as expited, set to true 
+            for row in ac.active_CAS:
+                if (    ( row[1]=='ALERT') and 
+                        ( row[2]=='no_ACKNOWLEDGED') and
+                        ( row[3] <= ack_time)       ):
+                    row[2] = 'yes_ACKNOWLEDGED'         # change status and en-able cas redraw
+                    ALERT_ACKNOWLEDGED_redraw_CAS = True
+            if ALERT_ACKNOWLEDGED_redraw_CAS == True:
+                #### NOTE, don't re-sort, to keed mes order ac.CAS_Messages_Sort()
+                self.redraw_CAS()
+                self.si.UpdateScrollIndicator()
+   
         
         
     #############################################################################
@@ -687,12 +694,12 @@ class MainWindow(Frame):
         # record the number of red CAS in the active DB. 
         # if there are any red, there is no scrolling,
         # the CCue icon should not be show.
-        # if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
-        #     self.scroll_up_down = 0
-        #     gv.AllowScrolling = False
-        # else:
-        #     gv.AllowScrolling = True
-        # #######################################################
+        if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
+            self.scroll_up_down = 0
+            gv.AllowScrolling = False
+        else:
+            gv.AllowScrolling = True
+        #######################################################
         
         if self.scroll_up_down < 0:
             self.scroll_up_down = 0       
@@ -728,7 +735,9 @@ class MainWindow(Frame):
                                                                             gv.BTuple[e.ALERT_yes]
                                                                             )
         StatusBar.configure(text = tx0+ '  ' + tx1 )
-
+        self.redraw_CAS()
+    
+    def redraw_CAS(self):
         self.si.UpdateScrollIndicator()
         
         # ##################################################################### 
@@ -832,6 +841,7 @@ delta = 1
 wn_y = bottom-ht-1
 adder = 0
 def f_loop():
+    appWin.MessageController()
     # nt.Anamation()    
     # global wn_y    
     # nt.wn.place(x=0, y=wn_y)
@@ -863,9 +873,9 @@ def f_loop():
     # floopp = 'time:={:.1f} seconds '.format(loopp/4)
     # StatusBar.configure(text = floopp)
 # #################################################
-cycles_per_second = 8
+cycles_per_second = 1
 loop = ltm.loop_Timer_Hz( cycles_per_second, f_loop)
-# loop.start()
+loop.start()
 f_loop()
 # #################################################
 

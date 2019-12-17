@@ -7,11 +7,14 @@ to use the enum's listed herein
 
 class enummerations():
     def __init__(self):
+        ###################
+        ### Rect values
         self.ptx    =   0
         self.pty    =   1
         self.width  =   2
         self.height =   3
-        
+        #####################################
+        ### CAS, T, B, S--Tuple index values
         self.WARNING_no  = 0
         self.WARNING_yes = 1
         self.CAUTION_no  = 2
@@ -22,7 +25,8 @@ class enummerations():
         self.NOTIFICATION_yes = 7
         self.END_of_CAS_MSG   = 8
         self.TOTAL_NO_MSG     = 9
-        
+        ###################################
+        ### Master Buttons
         self.id_WARNING         =   12300
         self.id_CAUTION         =   12311
         self.id_NOTIFICATION    =   12322
