@@ -660,7 +660,8 @@ class MainWindow(Frame):
 
             for row in local_notif:
                 row[2] = 'yes_ACKNOWLEDGED'
-               
+            
+            ac.CAS_Messages_Sort()   
             print(local_notif)
         print(ack_time)
         
