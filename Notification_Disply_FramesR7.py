@@ -95,7 +95,7 @@ class gv_global:
         self.but_font         = font.Font(family = 'ClearviewADA', size = 13, weight = 'bold'  )
         self.frame_label_font = font.Font(family = 'ClearviewADA', size = 11, weight = 'bold') 
         self.sym_font         = font.Font(family = 'ClearviewADA', size = 16, weight = 'normal')   
-        self.sym_Noti_flag         = font.Font(family = 'Arial Narrow', size = 16, weight = 'normal')        
+        self.sym_Noti_flag    = font.Font(family = 'Arial Narrow', size = 16, weight = 'normal')        
         ### CAS text ####################################################################
         font_ascent_scaler = 0.6
         self.cas_text_y = self.cas_font.metrics()['ascent'] * font_ascent_scaler
@@ -716,24 +716,7 @@ class MainWindow(Frame):
         self.UpDateTuples()
         self.redraw_CAS()
         self.ShowTuples()
-
-
-    def ShowTuples(self):   
-        tx0 = 'Above: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.HTuple[e.WARNING_no],
-                                                                            gv.HTuple[e.WARNING_yes],
-                                                                            gv.HTuple[e.CAUTION_no],
-                                                                            gv.HTuple[e.CAUTION_yes],
-                                                                            gv.HTuple[e.ALERT_no],
-                                                                            gv.HTuple[e.ALERT_yes]
-                                                                            )
-        tx1 = 'Below: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.BTuple[e.WARNING_no],
-                                                                            gv.BTuple[e.WARNING_yes],
-                                                                            gv.BTuple[e.CAUTION_no],
-                                                                            gv.BTuple[e.CAUTION_yes],
-                                                                            gv.BTuple[e.ALERT_no],
-                                                                            gv.BTuple[e.ALERT_yes]
-                                                                            )
-        StatusBar.configure(text = tx0+ '  ' + tx1 )
+        ##########################################################################
         
     def UpDateTuples(self):
         gv.HTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_high[0],self.CAS_off_screen_high[1])
