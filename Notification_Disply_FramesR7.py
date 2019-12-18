@@ -13,9 +13,52 @@ import active_CAS7 as ac
 from MyEnumerations import e
 import math
 from threading import Timer
+
 ##############################################
 root = Tk()
+# 12 18 1412
 ##############################################
+"""
+This module is the center for external controll of various software functions. 
+This a set of software switches with in the Notification code that change 
+behaviors.
+"""
+class Configure_Control:
+    def __init__(self):
+    # enumerations for control
+        self.ALLOW_NEVER = 0
+        self.ALLOW_WHEN_ACK = 1
+        self.ALLOW_ALL = 2
+        self.m_scroll_up_down = 0
+        ####
+    def Scrolling_with_RedCAS_Control( self, m_scroll_up_down, mode = 0 ):
+        self.m_scroll_up_down = m_scroll_up_down
+        # The method controls scrolling with red CAS presend. 
+        # There are three modes: with any red cas, or with just un-acknowlaged red CAS,
+        # the third mode is allow scrolling regardless of the red cas.
+        # The modes are controlled by a sofware switch Red_CAS_Control; the return values 
+        # ALLOW_ALL, ALLOW_WHEN_ACK, ALLOW_NEVER
+        if mode == self.ALLOW_ALL:
+            gv.AllowScrolling = True
+        ########         
+        elif mode == self.ALLOW_WHEN_ACK:
+            if  ac.mMsg_count.AllCasTuple[e.WARNING_no]  > 0:           
+                self.m_scroll_up_down = 0
+                gv.AllowScrolling = False        
+            else:
+                gv.AllowScrolling = True 
+        ########
+        elif mode == self.ALLOW_NEVER:          
+            if ( ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
+                self.m_scroll_up_down = 0
+                gv.AllowScrolling = False
+            else:
+                gv.AllowScrolling = True    
+        ######## 
+        return self.m_scroll_up_down
+    #########################################################################   
+cc = Configure_Control()
+############################################
 # 12-18 0552
 class gv_global:
     def __init__(self):
@@ -38,7 +81,7 @@ class gv_global:
         self.HTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
         self.STuple =   (0,0,0,0,0,0,0,0)     #tuple # on screen CAS count
         self.BTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen below CAS count
-        self.CASTuple = (0,0,0,0,0,0,0,0)     #tuple # of ALL CAS message, 
+        # self.CASTuple = (0,0,0,0,0,0,0,0)     #tuple # of ALL CAS message, 
         self.AllowScrolling = False         # red CAS can't be scrolled, controlls CCue
         self.event_adder = 0 # global scroll direction indicator, mouse wheel event driven
         ##################################################################################
@@ -334,8 +377,7 @@ class ScrollIndicator():
             if  gv.HTuple[e.ALERT_no] > 0:
                 sColor = ('white', 'black')            
             else:
-                sColor = ('black', 'white')   
-            
+                sColor = ('black', 'white')               
                  
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = sColor, 
                                                         sIndication = str(num_of_msg).zfill(2),
@@ -670,9 +712,7 @@ class MainWindow(Frame):
                 self.UpDateTuples()
                 self.redraw_CAS()
                 self.si.UpdateScrollIndicator()
-   
-        
-        
+
     #############################################################################
     def ScrollCAS(self, scroll_event = 0):
         # scroll_event mouse event from wheel
@@ -689,20 +729,19 @@ class MainWindow(Frame):
         ####### that can't scroll down from top
         self.scroll_up_down = self.scroll_up_down + gv.event_adder
         ###################################################
-        # record the number of red CAS in the active DB. 
-        # if there are any red, there is no scrolling,
-        # the CCue icon should not be show.
-        if (ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
-            self.scroll_up_down = 0
-            gv.AllowScrolling = False
-        else:
-            gv.AllowScrolling = True
-        #######################################################
         
-        if self.scroll_up_down < 0:
+        if self.scroll_up_down  < 0:
             self.scroll_up_down = 0       
-        if self.scroll_up_down >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
-            self.scroll_up_down =  ac.mMsg_count.END_of_CAS_MSG    # and no CAS is displayed, only END
+        if self.scroll_up_down  >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
+            self.scroll_up_down =  ac.mMsg_count.END_of_CAS_MSG     # and no CAS is displayed, only EN
+        
+        # Get the number of red CAS in the active DB. 
+        # if there are any red, there is no scrolling,
+        # the CCue icon should not be show. 
+        # ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
+        self.scroll_up_down = cc.Scrolling_with_RedCAS_Control(self.scroll_up_down, mode = 1)
+        print(self.scroll_up_down) 
+            
         #########################################################################################################
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
         self.CAS_on_screen          = (self.scroll_up_down, temp)   
@@ -724,8 +763,7 @@ class MainWindow(Frame):
         gv.STuple = ac.mMsg_count.Count_active_CAS(self.CAS_on_screen[0],self.CAS_on_screen[1])        
                
     def redraw_CAS(self):
-        self.si.UpdateScrollIndicator()
-        
+        self.si.UpdateScrollIndicator()       
         # ##################################################################### 
         # show the CAS messages on each canvas from top to bottom
         # cv.index is the particular canvas and location
@@ -836,47 +874,10 @@ root.bind("<MouseWheel>", OnMouseWheel)
 # #################################################
 # #################################################
 
-loopp =0
-bottom = gv.CAS_frame_rect[e.height]
-ht =bottom*0.2 -1
-steps = 3
-del_ht = ht/steps
-st_counter = 0
-delta = 1
-wn_y = bottom-ht-1
-adder = 0
+
 def f_loop():
     appWin.MessageController()
-    # nt.Anamation()    
-    # global wn_y    
-    # nt.wn.place(x=0, y=wn_y)
-    return
-    # stepper = 1 #gv.CAS_frame_rect[3]/6
-    # global wn_y
-    global st_counter
-    global delta
-    global adder 
-    if ( st_counter == 0 ):
-        adder = del_ht
-        time.sleep(2)
-        delta = 1
-    if ( st_counter == steps  ):
-        delta = -1
-        time.sleep(2)
-        adder = -del_ht
-    wn_y = wn_y + adder
-    st_counter = st_counter + delta
-    print('Delta:={}'.format(delta))
-    print('adder:= {}'.format(adder))
-    print(st_counter)
-    print('wn_y:= {}'.format(wn_y))
-    print('steps:={}'.format(steps))
-    nt.wn.place(x=0, y=wn_y)
-    #  #################################################
-    # global loopp
-    # loopp = loopp + 1
-    # floopp = 'time:={:.1f} seconds '.format(loopp/4)
-    # StatusBar.configure(text = floopp)
+#################################################
 # #################################################
 cycles_per_second = 1
 loop = ltm.loop_Timer_Hz( cycles_per_second, f_loop)
