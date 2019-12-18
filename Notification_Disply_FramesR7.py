@@ -16,7 +16,7 @@ from threading import Timer
 ##############################################
 root = Tk()
 ##############################################
-# 12-16 0947
+# 12-18 0552
 class gv_global:
     def __init__(self):
         # Three values determin the size of the main window
