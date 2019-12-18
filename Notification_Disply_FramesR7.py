@@ -516,9 +516,6 @@ class MainWindow(Frame):
         self.NOTIFICATION_bn_status  = False 
         self.scroll_up_down = 0 # the scroll position in the CAS window, from top of list
         
-        # self.alert_timer = Timer(interval = 5, 
-        #                          function = self.startup_status_master_buttons)
-
         ########### CAS message indexes for on screen and high/low off screen. ##########
         self.CAS_on_screen = (0,0) # the top and botton active_CAS messages on the screen
         self.CAS_off_screen_high = (0,0) 
@@ -670,6 +667,7 @@ class MainWindow(Frame):
                     ALERT_ACKNOWLEDGED_redraw_CAS = True
             if ALERT_ACKNOWLEDGED_redraw_CAS == True:
                 #### NOTE, don't re-sort, to keed mes order ac.CAS_Messages_Sort()
+                self.UpDateTuples()
                 self.redraw_CAS()
                 self.si.UpdateScrollIndicator()
    
@@ -715,10 +713,12 @@ class MainWindow(Frame):
                
         gv.num_in_screen_list       = self.CAS_on_screen[1] - self.CAS_on_screen[0]   
 
-        gv.HTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_high[0],self.CAS_off_screen_high[1])
-        gv.BTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_low[0],self.CAS_off_screen_low[1])
-        gv.STuple = ac.mMsg_count.Count_active_CAS(self.CAS_on_screen[0],self.CAS_on_screen[1])
-       
+        self.UpDateTuples()
+        self.redraw_CAS()
+        self.ShowTuples()
+
+
+    def ShowTuples(self):   
         tx0 = 'Above: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.HTuple[e.WARNING_no],
                                                                             gv.HTuple[e.WARNING_yes],
                                                                             gv.HTuple[e.CAUTION_no],
@@ -726,7 +726,6 @@ class MainWindow(Frame):
                                                                             gv.HTuple[e.ALERT_no],
                                                                             gv.HTuple[e.ALERT_yes]
                                                                             )
-
         tx1 = 'Below: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.BTuple[e.WARNING_no],
                                                                             gv.BTuple[e.WARNING_yes],
                                                                             gv.BTuple[e.CAUTION_no],
@@ -735,8 +734,12 @@ class MainWindow(Frame):
                                                                             gv.BTuple[e.ALERT_yes]
                                                                             )
         StatusBar.configure(text = tx0+ '  ' + tx1 )
-        self.redraw_CAS()
-    
+        
+    def UpDateTuples(self):
+        gv.HTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_high[0],self.CAS_off_screen_high[1])
+        gv.BTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_low[0],self.CAS_off_screen_low[1])
+        gv.STuple = ac.mMsg_count.Count_active_CAS(self.CAS_on_screen[0],self.CAS_on_screen[1])        
+               
     def redraw_CAS(self):
         self.si.UpdateScrollIndicator()
         
@@ -757,7 +760,28 @@ class MainWindow(Frame):
         while self.cv_index < gv.possable_num_of_CASMsg :
             gv.canvas_list[  self.cv_index ].ClearMessage()
             self.cv_index +=1  
-        # self.MessageController()               
+
+        #######################################################################
+        #Shows the number of messages off screen in the statusbay
+    def ShowTuples(self):   
+        tx0 = 'Above: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.HTuple[e.WARNING_no],
+                                                                            gv.HTuple[e.WARNING_yes],
+                                                                            gv.HTuple[e.CAUTION_no],
+                                                                            gv.HTuple[e.CAUTION_yes],
+                                                                            gv.HTuple[e.ALERT_no],
+                                                                            gv.HTuple[e.ALERT_yes]
+                                                                            )
+
+        tx1 = 'Below: Red({}, {}); Amber({}, {}); White({}, {})'.format(    gv.BTuple[e.WARNING_no],
+                                                                            gv.BTuple[e.WARNING_yes],
+                                                                            gv.BTuple[e.CAUTION_no],
+                                                                            gv.BTuple[e.CAUTION_yes],
+                                                                            gv.BTuple[e.ALERT_no],
+                                                                            gv.BTuple[e.ALERT_yes]
+                                                                            )
+        StatusBar.configure(text = tx0+ '  ' + tx1 )
+        #######################################################################       
+
 appWin = MainWindow(root)        
 ################################################################################
 ######################    NOTIFICATION MESSAGE     #############################
@@ -797,10 +821,8 @@ class Notifications:
                     fill   = 'black',                      # text color
                     text   = 'FMS1/2: NEW LINE ',  # text string
                     font   = gv.noti_font,               # the font defined in gv and above if-else
-                    anchor = 'nw'  )                  # anchor west LEFT justify        
-        
-        self.wn_y =  self.Notification_zero * 0.8
-        
+                    anchor = 'nw'  )                  # anchor west LEFT justify                
+        self.wn_y =  self.Notification_zero * 0.8        
         self.wn.place(x=0, y=self.wn_y)
                    
 nt = Notifications() 
