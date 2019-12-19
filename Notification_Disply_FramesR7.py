@@ -18,48 +18,8 @@ from Configuration_Control import cc
 root = Tk()
 # 12 18 1412
 ##############################################
-# """
-# This module is the center for external controll of various software functions. 
-# This a set of software switches with in the Notification code that change 
-# behaviors.
-# """
-# class Configure_Control:
-#     def __init__(self):
-#     # enumerations for control
-#         self.ALLOW_NEVER = 0
-#         self.ALLOW_WHEN_ACK = 1
-#         self.ALLOW_ALL = 2
-#         self.m_scroll_up_down = 0
-#         ####
-#     def Scrolling_with_RedCAS_Control( self, m_scroll_up_down, mode = 0 ):
-#         self.m_scroll_up_down = m_scroll_up_down
-#         # The method controls scrolling with red CAS presend. 
-#         # There are three modes: with any red cas, or with just un-acknowlaged red CAS,
-#         # the third mode is allow scrolling regardless of the red cas.
-#         # The modes are controlled by a sofware switch Red_CAS_Control; the return values 
-#         # ALLOW_ALL, ALLOW_WHEN_ACK, ALLOW_NEVER
-#         if mode == self.ALLOW_ALL:
-#             gv.AllowScrolling = True
-#         ########         
-#         elif mode == self.ALLOW_WHEN_ACK:
-#             if  ac.mMsg_count.AllCasTuple[e.WARNING_no]  > 0:           
-#                 self.m_scroll_up_down = 0
-#                 gv.AllowScrolling = False        
-#             else:
-#                 gv.AllowScrolling = True 
-#         ########
-#         elif mode == self.ALLOW_NEVER:          
-#             if ( ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
-#                 self.m_scroll_up_down = 0
-#                 gv.AllowScrolling = False
-#             else:
-#                 gv.AllowScrolling = True    
-#         ######## 
-#         return self.m_scroll_up_down
-#     #########################################################################   
-# cc = Configure_Control()
-# ############################################
-# 12-18 0552
+
+# 12-19 1644
 class gv_global:
     def __init__(self):
         # Three values determin the size of the main window
