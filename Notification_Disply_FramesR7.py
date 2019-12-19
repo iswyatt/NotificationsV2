@@ -724,12 +724,11 @@ class MainWindow(Frame):
             gv.event_adder = +1
         else:
             gv.event_adder = 0
-        #########################################            
+        ###########################################################            
         ####### add to the total scrolled msg and check 
         ####### that can't scroll down from top
         self.scroll_up_down = self.scroll_up_down + gv.event_adder
-        ###################################################
-        
+        ###########################################################        
         if self.scroll_up_down  < 0:
             self.scroll_up_down = 0       
         if self.scroll_up_down  >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
@@ -740,7 +739,6 @@ class MainWindow(Frame):
         # the CCue icon should not be show. 
         # ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
         self.scroll_up_down = cc.Scrolling_with_RedCAS_Control(self.scroll_up_down, mode = 1)
-        print(self.scroll_up_down) 
             
         #########################################################################################################
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
@@ -828,7 +826,8 @@ class Notifications:
 
     def Anamation(self):   
     #     The notification messags will anamate up from the bottom of the case window
-    #     in steps, 3 to 4 for the height of the notification (1/2 seconds in transit). The MAXIMU total will be 5, 
+    #     in steps, 3 to 4 for the height of the notification (1/2 seconds in transit). 
+    #   The MAXIMU total will be 5, 
     #     or 1/2 the CAS window height. The clock rate is 8 hz
         yspace = 20
         self.wn.create_text(20,                         # x position of the msg text
