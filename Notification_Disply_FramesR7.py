@@ -13,52 +13,52 @@ import active_CAS7 as ac
 from MyEnumerations import e
 import math
 from threading import Timer
-
+from Configuration_Control import cc
 ##############################################
 root = Tk()
 # 12 18 1412
 ##############################################
-"""
-This module is the center for external controll of various software functions. 
-This a set of software switches with in the Notification code that change 
-behaviors.
-"""
-class Configure_Control:
-    def __init__(self):
-    # enumerations for control
-        self.ALLOW_NEVER = 0
-        self.ALLOW_WHEN_ACK = 1
-        self.ALLOW_ALL = 2
-        self.m_scroll_up_down = 0
-        ####
-    def Scrolling_with_RedCAS_Control( self, m_scroll_up_down, mode = 0 ):
-        self.m_scroll_up_down = m_scroll_up_down
-        # The method controls scrolling with red CAS presend. 
-        # There are three modes: with any red cas, or with just un-acknowlaged red CAS,
-        # the third mode is allow scrolling regardless of the red cas.
-        # The modes are controlled by a sofware switch Red_CAS_Control; the return values 
-        # ALLOW_ALL, ALLOW_WHEN_ACK, ALLOW_NEVER
-        if mode == self.ALLOW_ALL:
-            gv.AllowScrolling = True
-        ########         
-        elif mode == self.ALLOW_WHEN_ACK:
-            if  ac.mMsg_count.AllCasTuple[e.WARNING_no]  > 0:           
-                self.m_scroll_up_down = 0
-                gv.AllowScrolling = False        
-            else:
-                gv.AllowScrolling = True 
-        ########
-        elif mode == self.ALLOW_NEVER:          
-            if ( ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
-                self.m_scroll_up_down = 0
-                gv.AllowScrolling = False
-            else:
-                gv.AllowScrolling = True    
-        ######## 
-        return self.m_scroll_up_down
-    #########################################################################   
-cc = Configure_Control()
-############################################
+# """
+# This module is the center for external controll of various software functions. 
+# This a set of software switches with in the Notification code that change 
+# behaviors.
+# """
+# class Configure_Control:
+#     def __init__(self):
+#     # enumerations for control
+#         self.ALLOW_NEVER = 0
+#         self.ALLOW_WHEN_ACK = 1
+#         self.ALLOW_ALL = 2
+#         self.m_scroll_up_down = 0
+#         ####
+#     def Scrolling_with_RedCAS_Control( self, m_scroll_up_down, mode = 0 ):
+#         self.m_scroll_up_down = m_scroll_up_down
+#         # The method controls scrolling with red CAS presend. 
+#         # There are three modes: with any red cas, or with just un-acknowlaged red CAS,
+#         # the third mode is allow scrolling regardless of the red cas.
+#         # The modes are controlled by a sofware switch Red_CAS_Control; the return values 
+#         # ALLOW_ALL, ALLOW_WHEN_ACK, ALLOW_NEVER
+#         if mode == self.ALLOW_ALL:
+#             gv.AllowScrolling = True
+#         ########         
+#         elif mode == self.ALLOW_WHEN_ACK:
+#             if  ac.mMsg_count.AllCasTuple[e.WARNING_no]  > 0:           
+#                 self.m_scroll_up_down = 0
+#                 gv.AllowScrolling = False        
+#             else:
+#                 gv.AllowScrolling = True 
+#         ########
+#         elif mode == self.ALLOW_NEVER:          
+#             if ( ac.mMsg_count.AllCasTuple[e.WARNING_no] + ac.mMsg_count.AllCasTuple[e.WARNING_yes]) > 0:           
+#                 self.m_scroll_up_down = 0
+#                 gv.AllowScrolling = False
+#             else:
+#                 gv.AllowScrolling = True    
+#         ######## 
+#         return self.m_scroll_up_down
+#     #########################################################################   
+# cc = Configure_Control()
+# ############################################
 # 12-18 0552
 class gv_global:
     def __init__(self):
@@ -738,7 +738,11 @@ class MainWindow(Frame):
         # if there are any red, there is no scrolling,
         # the CCue icon should not be show. 
         # ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
-        self.scroll_up_down = cc.Scrolling_with_RedCAS_Control(self.scroll_up_down, mode = 1)
+        rtn = cc.Scrolling_with_RedCAS_Control( self.scroll_up_down, 
+                                                 ac.mMsg_count.AllCasTuple ,
+                                                  mode = 1  )       
+        self.scroll_up_down  = rtn[0]
+        gv.AllowScrolling    = rtn[1]
             
         #########################################################################################################
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
