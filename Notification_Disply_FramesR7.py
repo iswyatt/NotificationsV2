@@ -14,9 +14,9 @@ from MyEnumerations import e
 import math
 from threading import Timer
 from Configuration_Control import cc
+from Notifications_Message import temp
 ##############################################
 root = Tk()
-# 12 18 1412
 ##############################################
 
 # 12-19 1644
@@ -255,7 +255,7 @@ class ScrollCanvas():
                 self.sv.configure( background = 'black' ) 
                 self.sv.delete('all') 
             #####################
-        else:
+        else: # draw the amber, white numbers with the approprate arrow
             # determin if it is an up or down arrow
             self.sv.configure( background = color[0] ) 
             self.sv.delete('all') 
@@ -325,17 +325,18 @@ class ScrollIndicator():
     #######################################################################################
     #######################################################################################
     def UpdateScrollIndicator(self): 
-        sColor =  ('black', 'black')   # ( bachground, text color )   
+        sColor =  ('black', 'black')   #(  bachground, text color )   
         # up \u00AD or \u0044, dn \u00AF or \u00D1 
         self.Scroll_cv_list[e.sCURLY_CUE].Update( color         = ('cyan', 'cyan'), 
                                                   sIndication   = '    ',
                                                   draw          = 'CCue'          )
-        ################          
+        ################
+        # ALERT White above          
         num_of_msg = gv.HTuple[e.ALERT_no] + gv.HTuple[e.ALERT_yes]
         if  num_of_msg > 0: 
                
             if  gv.HTuple[e.ALERT_no] > 0:
-                sColor = ('white', 'black')            
+                sColor = ('white', 'black') #(  bachground, text color )             
             else:
                 sColor = ('black', 'white')               
                  
@@ -346,11 +347,12 @@ class ScrollIndicator():
             self.Scroll_cv_list[e.sWHITE_ABOVE].Update( color = sColor, 
                                                         sIndication = '   ',
                                                         draw = 'UP_ARROW'       )            
-        ################   
+        ################ 
+        # AMBER CAUTION above  
         num_of_msg = gv.HTuple[e.CAUTION_no] + gv.HTuple[e.CAUTION_yes]
         if  num_of_msg > 0:         
             if  gv.HTuple[e.CAUTION_no] > 0:
-                sColor = ('yellow', 'black')            
+                sColor = ('yellow', 'black')  #(  bachground, text color )            
             else:
                 sColor = ('black', 'yellow')                                              
             self.Scroll_cv_list[e.sAMBER_ABOVE].Update( color = sColor, 
@@ -362,12 +364,18 @@ class ScrollIndicator():
         ################
         # WHITE Alert BELOW          
         num_of_msg = gv.BTuple[e.ALERT_no] + gv.BTuple[e.ALERT_yes]
-        if  num_of_msg > 0:         
-            self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'white'), 
+        if  num_of_msg > 0:  
+            
+            if  gv.BTuple[e.ALERT_no] > 0:
+                sColor = ('white', 'black')            
+            else:
+                sColor = ('black', 'white')   
+                            
+            self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = sColor, 
                                                         sIndication = str( num_of_msg ).zfill(2), 
                                                         draw = 'DOWN_ARROW' )
         else:
-            self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'black'), 
+            self.Scroll_cv_list[e.sWHITE_BELOW].Update( color = ('black', 'blue'), 
                                                         sIndication = '   '      )            
         ################
         # YELLOW CAUTION BELOW   
@@ -530,7 +538,6 @@ class MainWindow(Frame):
         self.si = ScrollIndicator( self.ImageFrame )
         self.ArrowLabel = Label(root)
         #################################################################################
-
     def init_window(self):
         self.master.title("Primary Window(Frame)")
         self.configure(background = 'black')
@@ -581,6 +588,13 @@ class MainWindow(Frame):
                              height  = gv.CAS_frame_rect[3]  ) 
         self.CreateCASMsgCanvas()
     #####################################################
+        self.StatusBar = Label(root, 
+                    text= '', 
+                    bd=1, 
+                    anchor=W, 
+                    height = -gv.statusbar_height,
+                    bg = 'gray')
+        self.StatusBar.pack(side=BOTTOM, fill=X)
     
     # initilize the Master buttons         
     def init_MsButtons(self, master_sw_frame):            
@@ -698,11 +712,10 @@ class MainWindow(Frame):
         # if there are any red, there is no scrolling,
         # the CCue icon should not be show. 
         # ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
-        rtn = cc.Scrolling_with_RedCAS_Control( self.scroll_up_down, 
-                                                 ac.mMsg_count.AllCasTuple ,
-                                                  mode = 1  )       
-        self.scroll_up_down  = rtn[0]
-        gv.AllowScrolling    = rtn[1]
+        rtn_tuple = cc.Scrolling_with_RedCAS_Control(  self.scroll_up_down, 
+                                                       ac.mMsg_count.AllCasTuple )       
+        self.scroll_up_down  = rtn_tuple[0]
+        gv.AllowScrolling    = rtn_tuple[1]
             
         #########################################################################################################
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
@@ -722,8 +735,7 @@ class MainWindow(Frame):
     def UpDateTuples(self):
         gv.HTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_high[0],self.CAS_off_screen_high[1])
         gv.BTuple = ac.mMsg_count.Count_active_CAS(self.CAS_off_screen_low[0],self.CAS_off_screen_low[1])
-        gv.STuple = ac.mMsg_count.Count_active_CAS(self.CAS_on_screen[0],self.CAS_on_screen[1])        
-               
+        gv.STuple = ac.mMsg_count.Count_active_CAS(self.CAS_on_screen[0],self.CAS_on_screen[1])                      
     def redraw_CAS(self):
         self.si.UpdateScrollIndicator()       
         # ##################################################################### 
@@ -762,10 +774,10 @@ class MainWindow(Frame):
                                                                             gv.BTuple[e.ALERT_no],
                                                                             gv.BTuple[e.ALERT_yes]
                                                                             )
-        StatusBar.configure(text = tx0+ '  ' + tx1 )
+        self.StatusBar.configure(text = tx0+ '  ' + tx1 )
         #######################################################################       
 
-appWin = MainWindow(root)        
+appWin = MainWindow(root)
 ################################################################################
 ######################    NOTIFICATION MESSAGE     #############################
 class Notifications:
@@ -811,10 +823,9 @@ class Notifications:
                    
 nt = Notifications() 
 #########################################################################################
-
-
 root.geometry( gv.root_geometry )
 root.resizable(0,0)
+
 #################################################
 def OnMouseWheel(event):
     # print("Mousewheel event: ", event.delta)
@@ -836,32 +847,23 @@ root.bind("<MouseWheel>", OnMouseWheel)
 #         wn.create_image(0,0, image = stippleNoteR, anchor = 'nw')
 # #################################################
 # #################################################
+def MessageController_1Sec_Loop_Timer( start = True, cycles_per_second = 1.0): 
+    loop = ltm.loop_Timer_Hz( cycles_per_second, appWin.MessageController )
+    if start == True:
+        loop.start()
+    else: 
+        loop.cancel()
 
 
-def f_loop():
-    appWin.MessageController()
-#################################################
-# #################################################
-cycles_per_second = 1
-loop = ltm.loop_Timer_Hz( cycles_per_second, f_loop)
-loop.start()
-f_loop()
 # #################################################
 
-StatusBar = Label(root, 
-                text= '', 
-                bd=1, 
-                anchor=W, 
-                height = -gv.statusbar_height,
-                bg = 'gray')
-StatusBar.pack(side=BOTTOM, fill=X)
-#################################################
-# si = ScrollIndicator( appWin.ImageFrame )
-# si.UpdateScrollIndicator()
 appWin.ScrollCAS(0)
 appWin.MessageController()
-# nt.Anamation()
-# wn_y = 0
-# nt.wn.place(x=0, y=wn_y)
 
+##############################################
+#start message loop to update scroll messages 
+# and ack the whate alert CAS messages
+MessageController_1Sec_Loop_Timer(False,1.0) 
+##############################################
+     
 mainloop()

@@ -13,11 +13,12 @@ from time import perf_counter_ns
 # t.start()
 ##########################################################
 
-class loop_Timer_Hz():
-    loop_counter = 0
+class loop_Timer_Hz:
     def __init__(self, hz, hFunction_name):     
         self.t= 1.0/float(hz)
         self.hFunction = hFunction_name
+        self.loop_counter = 0
+        self.loop_timer_is_running = False        
         self.thread = Timer(self.t, self.handle_function)
 
     def handle_function(self):
@@ -28,10 +29,16 @@ class loop_Timer_Hz():
         self.thread.start()
 
     def start(self):
-        self.thread.start()
+        if( self.loop_timer_is_running == False ) :
+            self.loop_timer_is_running = True
+            self.thread.start()
+        return self.loop_timer_is_running
 
     def cancel(self):
         self.thread.cancel()
+        self.loop_timer_is_running = False
+        return self.loop_timer_is_running        
+        
     ######################
 
 ###############################################################################
