@@ -203,38 +203,71 @@ class ScrollCanvas():
         self.Notification_flag = Image.open('stipple_only_50_100x100.png')
         self.sv.Notification_image = ImageTk.PhotoImage( self.Notification_flag )
 
+    def draw_NOTIFICATION_FLAG(self, sIndication ):
+        self.sv.configure( background = 'black' ) 
+        self.sv.delete('all') 
+        if (int(sIndication) >=2):
+            # the number of notification messages must be greater that one 
+            # to show the notification flag. 
+            #notification stippled image is displayed, and then over it is a cyan 
+            # retangle wher the number of hidden messages is indicated. 
+            self.sv.create_image(  0, 0, 
+                                image =  self.sv.Notification_image,
+                                anchor='nw'  )            
+            #Cyan rectangle overlaying the stippled image
+            self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
+                                                            outline = 'cyan',  
+                                                            fill    = 'cyan' )
+            # test format to show the number of messages on-deck with 1 or number
+            Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
+            y_spaceing = 6
+            x_spaceing = 8 
+            self.sv.create_text(
+                x_spaceing,                      # x position of the msg text
+                y_spaceing,                      # y position of the msg text
+                fill   = 'black',                # text color
+                text   = Noti_1_of_num,          # text string
+                font   = gv.sym_Noti_flag,       # the font defined in gv and above if-else
+                anchor = 'nw'  )                 # anchor west LEFT justify  
+            down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
+            self.sv.move(down_triangle, -12, 30)
+        else:
+            return 
+
+
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
         if (draw == 'NOTIFICATION_FLAG'):
-            self.sv.configure( background = 'black' ) 
-            self.sv.delete('all') 
-            if (int(sIndication) >=2):
-                # the number of notification messages must be greater that one 
-                # to show the notification flag. 
-                #notification stippled image is displayed, and then over it is a cyan 
-                # retangle wher the number of hidden messages is indicated. 
-                self.sv.create_image(  0, 0, 
-                                    image =  self.sv.Notification_image,
-                                    anchor='nw'  )            
-                #Cyan rectangle overlaying the stippled image
-                self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
-                                                                outline = 'cyan',  
-                                                                fill    = 'cyan' )
-                # test format to show the number of messages on-deck with 1 or number
-                Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
-                y_spaceing = 6
-                x_spaceing = 8 
-                self.sv.create_text(
-                    x_spaceing,                      # x position of the msg text
-                    y_spaceing,                      # y position of the msg text
-                    fill   = 'black',                # text color
-                    text   = Noti_1_of_num,          # text string
-                    font   = gv.sym_Noti_flag,       # the font defined in gv and above if-else
-                    anchor = 'nw'  )                 # anchor west LEFT justify  
-                down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
-                self.sv.move(down_triangle, -12, 30)
-            else:
-                return 
+            self.draw_NOTIFICATION_FLAG( sIndication )
+            # self.sv.configure( background = 'black' ) 
+            # self.sv.delete('all') 
+            # if (int(sIndication) >=2):
+            #     # the number of notification messages must be greater that one 
+            #     # to show the notification flag. 
+            #     #notification stippled image is displayed, and then over it is a cyan 
+            #     # retangle wher the number of hidden messages is indicated. 
+            #     self.sv.create_image(  0, 0, 
+            #                         image =  self.sv.Notification_image,
+            #                         anchor='nw'  )            
+            #     #Cyan rectangle overlaying the stippled image
+            #     self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
+            #                                                     outline = 'cyan',  
+            #                                                     fill    = 'cyan' )
+            #     # test format to show the number of messages on-deck with 1 or number
+            #     Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
+            #     y_spaceing = 6
+            #     x_spaceing = 8 
+            #     self.sv.create_text(
+            #         x_spaceing,                      # x position of the msg text
+            #         y_spaceing,                      # y position of the msg text
+            #         fill   = 'black',                # text color
+            #         text   = Noti_1_of_num,          # text string
+            #         font   = gv.sym_Noti_flag,       # the font defined in gv and above if-else
+            #         anchor = 'nw'  )                 # anchor west LEFT justify  
+            #     down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
+            #     self.sv.move(down_triangle, -12, 30)
+            # else:
+            #     return 
                          
         elif draw == 'CCue':
             if gv.AllowScrolling == True:
@@ -726,14 +759,10 @@ class MainWindow(Frame):
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
         self.CAS_on_screen          = (self.scroll_up_down, temp)   
                      
-        self.CAS_off_screen_high    = (0, self.CAS_on_screen[0] ) #- 1   )
-        
-        # self.CAS_off_screen_low     = (self.CAS_on_screen[1] + 1,  ac.mMsg_count.END_of_CAS_MSG)    
+        self.CAS_off_screen_high    = (0, self.CAS_on_screen[0] ) #- 1   )  
         
         self.CAS_off_screen_low     = (self.CAS_on_screen[1] ,  ac.mMsg_count.END_of_CAS_MSG)    
         
-        
-               
         gv.num_in_screen_list       = self.CAS_on_screen[1] - self.CAS_on_screen[0]   
 
         self.UpDateTuples()
@@ -783,7 +812,13 @@ class MainWindow(Frame):
                                                                             gv.BTuple[e.ALERT_no],
                                                                             gv.BTuple[e.ALERT_yes]
                                                                             )
-        self.StatusBar.configure(text = tx0+ '  ' + tx1 )
+        tx2 = '--'
+        if( gv.MessageController_1Sec_Loop_Timer_Running == True ) :
+            tx2 = 'Running'
+        else:
+            tx2 = 'Stopped'
+            
+        self.StatusBar.configure(text = tx0+ ' ' + tx1 + '; ' + tx2)
         #######################################################################       
 
 appWin = MainWindow(root)
@@ -806,7 +841,7 @@ class Notifications:
         self.wn.create_image(0,0, image = self.stippleNoteL, anchor = 'nw')
         self.wn_y = gv.CAS_frame_rect[e.height]*2##/2
         self.Notification_zero = gv.CAS_frame_rect[e.height]
-        self.wn.place(x=0, y=self.Notification_zero )
+        self.wn.place(x=0, y=self.Notification_zero-3 )
         # self.Anamation()
 
     def Anamation(self):   
@@ -862,13 +897,15 @@ def MessageController_1Sec_Loop_Timer( start = True, cycles_per_second = 1.0):
         gv.MessageController_1Sec_Loop_Timer_Running = loop.start()
     else: 
         gv.MessageController_1Sec_Loop_Timer_Running = loop.cancel()
-
+    appWin.ScrollCAS(0)
+    appWin.MessageController()
+    
 
 # #################################################
 
-appWin.ScrollCAS(0)
-appWin.MessageController()
-
+# appWin.ScrollCAS(0)
+# appWin.MessageController()
+# nt.Anamation()
 ##############################################
 #start message loop to update scroll messages 
 # and ack the whate alert CAS messages
