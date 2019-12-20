@@ -36,6 +36,7 @@ class gv_global:
         self.possable_num_of_CASMsg = 10
         # the time in seconds to automaticely ack an ALERT CAS message
         self.ALERT_msg_auto_ack = 10 #seconds
+        self.MessageController_1Sec_Loop_Timer_Running = False
         ##################################################################################
         ########### screen Tuples filled in the scroll method ##########################
         self.HTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
@@ -654,7 +655,7 @@ class MainWindow(Frame):
     def MessageController(self):
         gv.CASTuple = ac.mMsg_count.Count_active_CAS()
         ############################################
-        status = BooleanVar # true is an un Ack message exists.
+        status = BooleanVar # true if an un Ack message exists.
         ### WARNING_No messages
         if gv.CASTuple[e.WARNING_no] > 0:
             status = True
@@ -670,10 +671,14 @@ class MainWindow(Frame):
             # activate the CAUTION master switch
         self.CAUTION_bn_status = self.CAUTION_bn.SetStatusActive(status)
         ###########################################################################
-        ### ALERT WHITE CAS are auto acknowloged, if present start a 5 second timer.
-        ### ALERT_No messages               
+        ### ALERT WHITE CAS are auto acknowloged.
+        ### ALERT_No messages 
+        ### Auto acknowledge requires the MessageController loop timer to be running.
+        ### If it is not by-pass the auto ack code below.
+        if gv.MessageController_1Sec_Loop_Timer_Running == False:
+            return # by-pass the code             
         if gv.CASTuple[e.ALERT_no] > 0:
-            ack_time = time.time() - gv.ALERT_msg_auto_ack
+            ack_time = time.time() - gv.ALERT_msg_auto_ack # time interval to auto ack. 
             ALERT_ACKNOWLEDGED_redraw_CAS = False # when time as expited, set to true 
             for row in ac.active_CAS:
                 if (    ( row[1]=='ALERT') and 
@@ -723,7 +728,11 @@ class MainWindow(Frame):
                      
         self.CAS_off_screen_high    = (0, self.CAS_on_screen[0] ) #- 1   )
         
-        self.CAS_off_screen_low     = (self.CAS_on_screen[1] + 1,  ac.mMsg_count.END_of_CAS_MSG)    
+        # self.CAS_off_screen_low     = (self.CAS_on_screen[1] + 1,  ac.mMsg_count.END_of_CAS_MSG)    
+        
+        self.CAS_off_screen_low     = (self.CAS_on_screen[1] ,  ac.mMsg_count.END_of_CAS_MSG)    
+        
+        
                
         gv.num_in_screen_list       = self.CAS_on_screen[1] - self.CAS_on_screen[0]   
 
@@ -850,9 +859,9 @@ root.bind("<MouseWheel>", OnMouseWheel)
 def MessageController_1Sec_Loop_Timer( start = True, cycles_per_second = 1.0): 
     loop = ltm.loop_Timer_Hz( cycles_per_second, appWin.MessageController )
     if start == True:
-        loop.start()
+        gv.MessageController_1Sec_Loop_Timer_Running = loop.start()
     else: 
-        loop.cancel()
+        gv.MessageController_1Sec_Loop_Timer_Running = loop.cancel()
 
 
 # #################################################
@@ -863,7 +872,7 @@ appWin.MessageController()
 ##############################################
 #start message loop to update scroll messages 
 # and ack the whate alert CAS messages
-MessageController_1Sec_Loop_Timer(False,1.0) 
+MessageController_1Sec_Loop_Timer(True,1.0) 
 ##############################################
      
 mainloop()
