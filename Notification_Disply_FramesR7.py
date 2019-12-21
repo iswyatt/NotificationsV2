@@ -15,6 +15,7 @@ import math
 from threading import Timer
 from Configuration_Control import cc
 from Notifications_Message import temp
+import InfiniteTimer as ft
 ##############################################
 root = Tk()
 ##############################################
@@ -37,6 +38,7 @@ class gv_global:
         # the time in seconds to automaticely ack an ALERT CAS message
         self.ALERT_msg_auto_ack = 10 #seconds
         self.MessageController_1Sec_Loop_Timer_Running = False
+        self.Notification_Animation_Timer_Running = False
         ##################################################################################
         ########### screen Tuples filled in the scroll method ##########################
         self.HTuple =   (0,0,0,0,0,0,0,0)     #tuple # off screen high CAS count
@@ -120,6 +122,9 @@ def MasterButtonCallback(bt_id, status):
         ac.Ackknowlege_CAS(bt_id)
     appWin.ScrollCAS(0)
     appWin.MessageController()
+    
+    if bt_id == e.id_NOTIFICATION:
+        nt.Animation()
          
 ################################################################################
 class MasterButton(Button):
@@ -212,12 +217,12 @@ class ScrollCanvas():
             #notification stippled image is displayed, and then over it is a cyan 
             # retangle wher the number of hidden messages is indicated. 
             self.sv.create_image(  0, 0, 
-                                image =  self.sv.Notification_image,
-                                anchor='nw'  )            
+                                   image =  self.sv.Notification_image,
+                                   anchor='nw'  )            
             #Cyan rectangle overlaying the stippled image
             self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
-                                                            outline = 'cyan',  
-                                                            fill    = 'cyan' )
+                                                              outline = 'cyan',  
+                                                              fill    = 'cyan' )
             # test format to show the number of messages on-deck with 1 or number
             Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
             y_spaceing = 6
@@ -238,36 +243,8 @@ class ScrollCanvas():
     def Update(self, color = ('yellow', 'black'), sIndication = '   ', draw = ''):  
         # "draw = " pass additional information: draw up or dow arrow, notification graphic etc.
         if (draw == 'NOTIFICATION_FLAG'):
-            self.draw_NOTIFICATION_FLAG( sIndication )
-            # self.sv.configure( background = 'black' ) 
-            # self.sv.delete('all') 
-            # if (int(sIndication) >=2):
-            #     # the number of notification messages must be greater that one 
-            #     # to show the notification flag. 
-            #     #notification stippled image is displayed, and then over it is a cyan 
-            #     # retangle wher the number of hidden messages is indicated. 
-            #     self.sv.create_image(  0, 0, 
-            #                         image =  self.sv.Notification_image,
-            #                         anchor='nw'  )            
-            #     #Cyan rectangle overlaying the stippled image
-            #     self.cyan_NRectangle = self.sv.create_rectangle(  self.Notificaton_cyan_rect, 
-            #                                                     outline = 'cyan',  
-            #                                                     fill    = 'cyan' )
-            #     # test format to show the number of messages on-deck with 1 or number
-            #     Noti_1_of_num = '1/{}'.format(sIndication) # can only be one charactor long                                                              
-            #     y_spaceing = 6
-            #     x_spaceing = 8 
-            #     self.sv.create_text(
-            #         x_spaceing,                      # x position of the msg text
-            #         y_spaceing,                      # y position of the msg text
-            #         fill   = 'black',                # text color
-            #         text   = Noti_1_of_num,          # text string
-            #         font   = gv.sym_Noti_flag,       # the font defined in gv and above if-else
-            #         anchor = 'nw'  )                 # anchor west LEFT justify  
-            #     down_triangle = self.sv.create_polygon(  self.down_arrow, outline = 'black', fill = 'black' )
-            #     self.sv.move(down_triangle, -12, 30)
-            # else:
-            #     return 
+            #self.draw_NOTIFICATION_FLAG( sIndication )
+            return
                          
         elif draw == 'CCue':
             if gv.AllowScrolling == True:
@@ -307,8 +284,10 @@ class ScrollCanvas():
                 anchor = 'nw'  )        # anchor west LEFT justify   
 ############################################################################
 ############################################################################            
-class ScrollIndicator():
+class Scroll_Indicator():
     def __init__(self, contex):
+        # creates the indicators canvases and the notification flag canvas
+        # and the CCue canvas.
         self.m_contex = contex 
         pad = 10
         m_NoOfCanvas=   6        
@@ -359,6 +338,9 @@ class ScrollIndicator():
     #######################################################################################
     #######################################################################################
     def UpdateScrollIndicator(self): 
+        # called from MasterController and when the CAS messages are scrolled
+        # according to the values in the H+B Tuple the individual scroll
+        # canvas are updated by the update function
         sColor =  ('black', 'black')   #(  bachground, text color )   
         # up \u00AD or \u0044, dn \u00AF or \u00D1 
         self.Scroll_cv_list[e.sCURLY_CUE].Update( color         = ('cyan', 'cyan'), 
@@ -569,7 +551,7 @@ class MainWindow(Frame):
         self.init_MsButtons( self.MasterSwFrame )
         self.startup_status_master_buttons()
         #################################################################################
-        self.si = ScrollIndicator( self.ImageFrame )
+        self.si =Scroll_Indicator( self.ImageFrame )
         self.ArrowLabel = Label(root)
         #################################################################################
     def init_window(self):
@@ -824,6 +806,7 @@ class MainWindow(Frame):
 appWin = MainWindow(root)
 ################################################################################
 ######################    NOTIFICATION MESSAGE     #############################
+
 class Notifications:
     def __init__(self):
         # four png files: 
@@ -842,29 +825,40 @@ class Notifications:
         self.wn_y = gv.CAS_frame_rect[e.height]*2##/2
         self.Notification_zero = gv.CAS_frame_rect[e.height]
         self.wn.place(x=0, y=self.Notification_zero-3 )
-        # self.Anamation()
+        self.counter = 0
 
-    def Anamation(self):   
+    def Animation(self): 
+        Notification_Animation_Timer(True)  
+        print('nt.Animation') 
+        self.counter = self.counter +1
+        print(self.counter)
+        txt = '{}\t'.format(self.counter)
     #     The notification messags will anamate up from the bottom of the case window
     #     in steps, 3 to 4 for the height of the notification (1/2 seconds in transit). 
-    #   The MAXIMU total will be 5, 
+    #     The MAXIMU total will be 5, 
     #     or 1/2 the CAS window height. The clock rate is 8 hz
-        yspace = 20
-        self.wn.create_text(20,                         # x position of the msg text
-                    6,                      # y position of the msg text
-                    fill   = 'black',                      # text color
-                    text   = 'FMS1/2: TEST 1234567890 ',  # text string
-                    font   = gv.noti_font,               # the font defined in gv and above if-else
-                    anchor = 'nw'  )                  # anchor west LEFT justify
-        self.wn.create_text(20,                         # x position of the msg text
-                    6+yspace,                      # y position of the msg text
-                    fill   = 'black',                      # text color
-                    text   = 'FMS1/2: NEW LINE ',  # text string
-                    font   = gv.noti_font,               # the font defined in gv and above if-else
-                    anchor = 'nw'  )                  # anchor west LEFT justify                
+        self.wn.configure( background = 'cyan' ) 
+        self.wn.delete('all') 
+        y_line_space = 20 
+        self.wn.create_text(20,                             # x position of the msg text
+                    6,                                      # y position of the msg text
+                    fill   = 'black',                       # text color
+                    text   = txt,    # text string
+                    font   = gv.noti_font,                  # the font defined in gv and above if-else
+                    anchor = 'nw'  )                        # anchor west LEFT justify
+        self.wn.create_text(20,                             # x position of the msg text
+                    6 + y_line_space,                       # y position of the msg text
+                    fill   = 'black',                       # text color
+                    text   = 'FMS1/2: NEW LINE ',           # text string
+                    font   = gv.noti_font,                  # the font defined in gv and above if-else
+                    anchor = 'nw'  )                        # anchor west LEFT justify
+                        
         self.wn_y =  self.Notification_zero * 0.8        
         self.wn.place(x=0, y=self.wn_y)
-                   
+        if self.counter > 4:
+            Notification_Animation_Timer(False)  
+
+           
 nt = Notifications() 
 #########################################################################################
 root.geometry( gv.root_geometry )
@@ -890,26 +884,40 @@ root.bind("<MouseWheel>", OnMouseWheel)
 #     else:
 #         wn.create_image(0,0, image = stippleNoteR, anchor = 'nw')
 # #################################################
+### Below, final initilization and start-up
+### Two times are created, the Message Controller 1 second
+### loop is started and rus through the duration of the application.
+### the 8 cps loop runs to animate the Notification messages.
 # #################################################
-def MessageController_1Sec_Loop_Timer( start = True, cycles_per_second = 1.0): 
-    loop = ltm.loop_Timer_Hz( cycles_per_second, appWin.MessageController )
+def MessageController_1Sec_Loop_Timer( start = True ): 
+    # return
+    # Msg_Cont_loop = ltm.loop_Timer_Hz( cycles_per_second, appWin.MessageController )
     if start == True:
-        gv.MessageController_1Sec_Loop_Timer_Running = loop.start()
+        gv.MessageController_1Sec_Loop_Timer_Running = Msg_Cont_loop.start()
     else: 
-        gv.MessageController_1Sec_Loop_Timer_Running = loop.cancel()
+        gv.MessageController_1Sec_Loop_Timer_Running = Msg_Cont_loop.cancel()
     appWin.ScrollCAS(0)
     appWin.MessageController()
     
+#####################################################
+def Notification_Animation_Timer( start = True):
+    ######  cycles_per_second = 8 
+    if ( start == True and gv.Notification_Animation_Timer_Running == False):
+        rtn = gv.Notification_Animation_Timer_Running = notification_loop.start()
 
-# #################################################
+    elif start == False: 
+        rtn = gv.Notification_Animation_Timer_Running = notification_loop.cancel()
+        
+    else:
+        print('Continuing with Notification_Animation_Timer')    
 
-# appWin.ScrollCAS(0)
-# appWin.MessageController()
-# nt.Anamation()
 ##############################################
 #start message loop to update scroll messages 
 # and ack the whate alert CAS messages
-MessageController_1Sec_Loop_Timer(True,1.0) 
+Msg_Cont_loop = ltm.loop_Timer_Hz( 1.0 , appWin.MessageController )
+MessageController_1Sec_Loop_Timer(True) 
 ##############################################
-     
+
+notification_loop = ft.InfiniteTimer( 8 , nt.Animation )
+Notification_Animation_Timer(True)     
 mainloop()
