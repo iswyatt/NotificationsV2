@@ -16,6 +16,8 @@ from threading import Timer
 from Configuration_Control import cc
 from Notifications_Message import temp
 import InfiniteTimer as ft
+
+import TopLevel_Win as tl
 ##############################################
 root = Tk()
 ##############################################
@@ -806,7 +808,6 @@ class MainWindow(Frame):
 appWin = MainWindow(root)
 ################################################################################
 ######################    NOTIFICATION MESSAGE     #############################
-
 class Notifications:
     def __init__(self):
         # four png files: 
@@ -820,7 +821,7 @@ class Notifications:
                         width  = gv.CAS_frame_rect[2], 
                         height = gv.CAS_frame_rect[3]/2, # the notification is 1/2 the CAS frame (5 CAS msg)
                         highlightthickness=0,
-                        background = 'blue')
+                        background = 'cyan')
         self.wn.create_image(0,0, image = self.stippleNoteL, anchor = 'nw')
         self.wn_y = gv.CAS_frame_rect[e.height]*2##/2
         self.Notification_zero = gv.CAS_frame_rect[e.height]
@@ -837,8 +838,9 @@ class Notifications:
     #     in steps, 3 to 4 for the height of the notification (1/2 seconds in transit). 
     #     The MAXIMU total will be 5, 
     #     or 1/2 the CAS window height. The clock rate is 8 hz
-        self.wn.configure( background = 'cyan' ) 
+#        self.wn.configure( background = 'cyan' ) 
         self.wn.delete('all') 
+        self.wn.create_image(0,0, image = self.stippleNoteL, anchor = 'nw')
         y_line_space = 20 
         self.wn.create_text(20,                             # x position of the msg text
                     6,                                      # y position of the msg text
@@ -852,13 +854,12 @@ class Notifications:
                     text   = 'FMS1/2: NEW LINE ',           # text string
                     font   = gv.noti_font,                  # the font defined in gv and above if-else
                     anchor = 'nw'  )                        # anchor west LEFT justify
-                        
-        self.wn_y =  self.Notification_zero * 0.8        
+        delta = (self.Notification_zero * 0.8)/4                
+        self.wn_y =  delta*self.counter       
         self.wn.place(x=0, y=self.wn_y)
         if self.counter > 4:
             Notification_Animation_Timer(False)  
-
-           
+######################
 nt = Notifications() 
 #########################################################################################
 root.geometry( gv.root_geometry )
@@ -898,7 +899,6 @@ def MessageController_1Sec_Loop_Timer( start = True ):
         gv.MessageController_1Sec_Loop_Timer_Running = Msg_Cont_loop.cancel()
     appWin.ScrollCAS(0)
     appWin.MessageController()
-    
 #####################################################
 def Notification_Animation_Timer( start = True):
     ######  cycles_per_second = 8 
@@ -910,14 +910,27 @@ def Notification_Animation_Timer( start = True):
         
     else:
         print('Continuing with Notification_Animation_Timer')    
-
 ##############################################
-#start message loop to update scroll messages 
-# and ack the whate alert CAS messages
-Msg_Cont_loop = ltm.loop_Timer_Hz( 1.0 , appWin.MessageController )
-MessageController_1Sec_Loop_Timer(True) 
-##############################################
+# Timer off 
+if False:
 
-notification_loop = ft.InfiniteTimer( 8 , nt.Animation )
-Notification_Animation_Timer(True)     
+    #start message loop to update scroll messages 
+    # and ack the whate alert CAS messages
+    Msg_Cont_loop = ltm.loop_Timer_Hz( 1.0 , appWin.MessageController )
+    MessageController_1Sec_Loop_Timer(True) 
+    ##############################################
+    notification_loop = ft.InfiniteTimer( 12 , nt.Animation )
+    nt.Animation()
+    # Notification_Animation_Timer(True)  
+    ############################################## 
+win1 = tl.create_win1()
+print(id(win1))  
+win1.Test_Print()
+# win1.Init_Messages()
+
+win2 = tl.create_win2()
+print(id(win2))  
+win2.Test_Print()
+# win2.Init_Messages()
+##############################################
 mainloop()

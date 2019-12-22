@@ -1,22 +1,39 @@
-import InfiniteTimer as ft
-import time
+import tkinter as tk
+from tkinter import ttk
+import TopLevel_Win as tl
 
-counter = 0
+class ScrollableFrame(ttk.Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = ttk.Frame(canvas)
 
-def tick():
-    global counter
-    print('entering tick function call')
-    counter = counter + 1
-    print(counter)
-    if counter >=20:
-        t.cancel() 
-        counter = 0
-        time.sleep(2.5)
+        self.scrollable_frame.bind(  "<Configure>",
+                                     lambda e: canvas.configure( scrollregion=canvas.bbox("all") )
+                                  )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
         
-    print(counter)   
-    t.start()
-  
-    
-# Example Usage
-t = ft.InfiniteTimer(1, tick)
-t.start()
+root = tk.Tk()
+
+frame = ScrollableFrame(root)
+
+# for i in range(50):
+#     ttk.Label(frame.scrollable_frame, text="Sample scrolling label").pack()
+
+for i in range(100):
+    # tl.Messages(frame.scrollable_frame).mv.pack()
+    tl.Messages(frame.scrollable_frame).mv.pack()
+
+
+
+
+frame.pack()
+root.mainloop()
+        
