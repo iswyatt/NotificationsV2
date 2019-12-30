@@ -23,6 +23,7 @@ root = Tk()
 ##############################################
 
 # 12-19 1644
+# 12-30 0646
 class gv_global:
     def __init__(self):
         # Three values determin the size of the main window
