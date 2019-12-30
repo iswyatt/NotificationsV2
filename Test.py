@@ -27,9 +27,9 @@ frame = ScrollableFrame(root)
 # for i in range(50):
 #     ttk.Label(frame.scrollable_frame, text="Sample scrolling label").pack()
 
-for i in range(100):
-    # tl.Messages(frame.scrollable_frame).mv.pack()
+for i in range(50):
     tl.Messages(frame.scrollable_frame).mv.pack()
+    # tl.Messages(frame.scrollable_frame, (5, 20*i))
 
 
 

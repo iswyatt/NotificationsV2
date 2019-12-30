@@ -889,10 +889,15 @@ root.bind("<MouseWheel>", OnMouseWheel)
 ### Two times are created, the Message Controller 1 second
 ### loop is started and rus through the duration of the application.
 ### the 8 cps loop runs to animate the Notification messages.
-# #################################################
-def MessageController_1Sec_Loop_Timer( start = True ): 
-    # return
-    # Msg_Cont_loop = ltm.loop_Timer_Hz( cycles_per_second, appWin.MessageController )
+# ##################################################################
+Msg_Cont_loop = ltm.loop_Timer_Hz( hz = 1.0 , 
+                                   hFunction_name = appWin.MessageController )
+
+notification_loop = ft.InfiniteTimer( cycles_per_seconds = 12 , 
+                                      target = nt.Animation )
+####################################################################
+def MessageController_1Sec_Loop_Timer( start = True ):
+    global Msg_Cont_loop
     if start == True:
         gv.MessageController_1Sec_Loop_Timer_Running = Msg_Cont_loop.start()
     else: 
@@ -901,27 +906,30 @@ def MessageController_1Sec_Loop_Timer( start = True ):
     appWin.MessageController()
 #####################################################
 def Notification_Animation_Timer( start = True):
+    global notification_loop
     ######  cycles_per_second = 8 
     if ( start == True and gv.Notification_Animation_Timer_Running == False):
         rtn = gv.Notification_Animation_Timer_Running = notification_loop.start()
-
     elif start == False: 
-        rtn = gv.Notification_Animation_Timer_Running = notification_loop.cancel()
-        
+        rtn = gv.Notification_Animation_Timer_Running = notification_loop.cancel()      
     else:
-        print('Continuing with Notification_Animation_Timer')    
+        return  #print('Continuing with Notification_Animation_Timer running')    
 ##############################################
-# Timer off 
-if False:
-
+if True:
+    # Timer off 
+    # True or False in this if statement activates (or not) the start and loading
+    # of the CAS messages.
+    # 1. the Msg_Count_loop is a one second continous loop the calls the 
+    #    appWin (main window) MessaheController to control process. 
+    # 2. The notification loop is a 12 hz time only stated when moving notification messages.
+    ##############################################
     #start message loop to update scroll messages 
     # and ack the whate alert CAS messages
-    Msg_Cont_loop = ltm.loop_Timer_Hz( 1.0 , appWin.MessageController )
+    # Msg_Cont_loop = ltm.loop_Timer_Hz( 1.0 , appWin.MessageController )
     MessageController_1Sec_Loop_Timer(True) 
     ##############################################
-    notification_loop = ft.InfiniteTimer( 12 , nt.Animation )
+    # notification_loop 
     nt.Animation()
-    # Notification_Animation_Timer(True)  
     ############################################## 
 win1 = tl.create_win1()
 print(id(win1))  
@@ -933,4 +941,13 @@ print(id(win2))
 win2.Test_Print()
 # win2.Init_Messages()
 ##############################################
+def wm_delete_window():
+    MessageController_1Sec_Loop_Timer(start = False)
+    Notification_Animation_Timer(start = False)
+    print('wm_delete_window')
+    root.destroy()
+    
+
+root.wm_protocol('WM_DELETE_WINDOW', wm_delete_window)
+
 mainloop()
