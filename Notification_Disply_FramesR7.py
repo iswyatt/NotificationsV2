@@ -25,6 +25,7 @@ root = Tk()
 # 12-19 1644
 # 12-30 0646 All files are recomitted, missing graphics error seems to have been resolved
 #            with new clone as of 12-29
+# 12-30 updates:
 class gv_global:
     def __init__(self):
         # Three values determin the size of the main window

@@ -1,20 +1,21 @@
+
 import loop_Timer_Module as ltm
 from tkinter import *
 from tkinter import ttk
 import tkinter.font as font
 # uses pillow the PIL import
-from PIL import Image, ImageTk
+# from PIL import Image, ImageTk
 import time 
 import datetime
 import os 
 os.system('cls')
-import active_CAS7 as ac
-from MyEnumerations import e
-import math
-from threading import Timer
-from Configuration_Control import cc
-from Notifications_Message import temp
-import InfiniteTimer as ft
+# import active_CAS7 as ac
+# from MyEnumerations import e
+# import math
+# from threading import Timer
+# from Configuration_Control import cc
+# from Notifications_Message import temp
+# import InfiniteTimer as ft
 
 
 win1 = object
@@ -58,29 +59,15 @@ class Messages:
         self.mv.place( x = msg_point[0], 
                        y = msg_point[1]  )         
         # self.mv.pack()   
-        
-        
-# class Messages:
-#     def __init__(self, contex = None,  msg_point = (0,0)): 
-#         contex = contex                
-#         mv = Canvas(contex) 
-#         mv.configure(width  = gTL.message_rect[2]-10)
-#         mv.configure(height = gTL.message_rect[3])
-#         mv.configure(highlightthickness = 0)
-#         mv.configure(background = 'white')
-#         mv.configure(relief = GROOVE)
-#         cas_font= font.Font(family = 'ClearviewADA', size = 20, weight = 'normal')        
-#         txt = "this is text need descender gqtypj"  
-#         mv.create_text(20,                             # x position of the msg text
-#                     3,                                      # y position of the msg text
-#                     fill   = 'blue',                       # text color
-#                     font   =  cas_font,
-#                     text   = txt,    # text string
-#                     anchor = 'nw'  )                
+               
         
         
                
 class TopLevelWindow(Toplevel):
+    """
+    The Toplevel window CANNOT be created prior to the main root window,
+    or strange thing will happen.
+    """
     def __init__(self, window_title = 'default window title'):
         super().__init__()
         self.configure (bg = '#333333')
@@ -97,17 +84,13 @@ class TopLevelWindow(Toplevel):
         self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
         
         
-        
-        
-        
     def Init_Messages(self):
         mes = Messages(self, (0,0) )
         
     def Test_Print(self):
         print('does test print work???????????????????')
 
-
-
+# win2 = TopLevelWindow( window_title = 'TopLever Win2') 
 
 
 
@@ -117,6 +100,7 @@ def create_win2( ):
     global win2
     win2 = TopLevelWindow( window_title = 'TopLever Win2')  
     print(id(win2))
+    print(win2.iconify())
     return win2   
 
 def create_win1( ):
