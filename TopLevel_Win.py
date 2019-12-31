@@ -82,13 +82,17 @@ class TopLevelWindow(Toplevel):
         # attach  to scrollbar
         self.msg_canvas.mv.config( yscrollcommand = self.scrollbar.set)
         self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
-        
+
+        self.wm_protocol('WM_DELETE_WINDOW', self.Test_Print)
+
         
     def Init_Messages(self):
         mes = Messages(self, (0,0) )
         
     def Test_Print(self):
-        print('does test print work???????????????????')
+        print('does test print work?')
+        
+
 
 # win2 = TopLevelWindow( window_title = 'TopLever Win2') 
 
@@ -100,7 +104,7 @@ def create_win2( ):
     global win2
     win2 = TopLevelWindow( window_title = 'TopLever Win2')  
     print(id(win2))
-    print(win2.iconify())
+    print(f'win2.winfo_exists()={win2.winfo_exists()}')
     return win2   
 
 def create_win1( ):

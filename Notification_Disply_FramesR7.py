@@ -559,6 +559,70 @@ class MainWindow(Frame):
         self.si =Scroll_Indicator( self.ImageFrame )
         self.ArrowLabel = Label(root)
         #################################################################################
+        # adding application menu
+        self.menubar = Menu(   master = root )
+        ##### File menu items ##############################
+        self.file_menu = Menu( master = self.menubar, 
+                               tearoff = 0)
+        self.file_menu.add_command( label = "Exit Application", 
+                                    command = self.exit_application )
+        self.menubar.add_cascade( label = 'File', 
+                                  menu  =  self.file_menu)
+        ##### View Menu Items #############################
+        self.view_menu = Menu( master = self.menubar, 
+                               tearoff = 0)
+        
+        self.toplevel_1_displayed = BooleanVar()
+        
+        self.toplevel_1_displayed.set(True)
+        
+        self.toplevel_1_displayed.trace( mode = 'w', 
+                                         callback = self.show_toplevel_1 ) 
+               
+        self.view_menu.add_checkbutton( label = 'Show Top Level (1)',
+                                        onvalue = True,
+                                        offvalue = False,
+                                        variable = self.toplevel_1_displayed)
+        
+        self.toplevel_2_displayed = BooleanVar()  
+        self.toplevel_2_displayed.set(True)
+        
+        self.toplevel_2_displayed.trace( mode = 'w', 
+                                         callback = self.show_toplevel_2 ) 
+               
+        self.view_menu.add_checkbutton( label = 'Show Top Level (2)',
+                                        onvalue = True,
+                                        offvalue = False,
+                                        variable = self.toplevel_2_displayed)
+     
+        # self.view_menu.add_command( label = "Show Toplevel 1", 
+        #                             command = self.show_toplevel_1 )
+        # self.view_menu.add_command( label = "Show Toplevel 2", 
+        #                             command = self.show_toplevel_2 )
+        
+        ####################################################
+        self.menubar.add_cascade( label = 'View', 
+                                  menu  =  self.view_menu)
+        
+        
+        
+        
+        root.configure( menu = self.menubar) # add the actual menubar to the window
+        # NOTE: this MainWindow is NOT derived fro Tk and root is used to show the menu.
+        
+        #################################################################################
+    def show_toplevel_1(self):
+        pass
+    def show_toplevel_2(self):
+        pass
+        
+    def exit_application(self):
+        # shoutdown times and distroy widgits, primarly from the menu or x commands
+        MessageController_1Sec_Loop_Timer(start = False)
+        Notification_Animation_Timer(start = False)
+        print('wm_delete_window')
+        root.destroy()
+        #################################################################################
     def init_window(self):
         self.master.title("Primary Window(Frame)")
         self.configure(background = 'black')
@@ -944,13 +1008,14 @@ print(id(win2))
 win2.Test_Print()
 # win2.Init_Messages()
 ##############################################
-def wm_delete_window():
-    MessageController_1Sec_Loop_Timer(start = False)
-    Notification_Animation_Timer(start = False)
-    print('wm_delete_window')
-    root.destroy()
+def wm_delete_window_appWin(): # intercept the MainWindow "X" pressed message
+    appWin.exit_application()
+def wm_delete_window_Win2(): # intercept the MainWindow "X" pressed message
+    print(f'wm_delete_window_Win2 = {wm_delete_window_Win2} ')
     
 
-root.wm_protocol('WM_DELETE_WINDOW', wm_delete_window)
+    
+tl.win2.wm_protocol(('WM_DELETE_WINDOW', wm_delete_window_Win2))
+root.wm_protocol('WM_DELETE_WINDOW', wm_delete_window_appWin)
 
 mainloop()
