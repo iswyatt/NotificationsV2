@@ -18,6 +18,8 @@ from Notifications_Message import temp
 import InfiniteTimer as ft
 
 import TopLevel_Win as tl
+
+import MainWindowMenu as mwm
 ##############################################
 root = Tk()
 ##############################################
@@ -129,7 +131,8 @@ def MasterButtonCallback(bt_id, status):
     appWin.MessageController()
     
     if bt_id == e.id_NOTIFICATION:
-        nt.Animation()
+        # nt.Animation()
+        For_Test()
          
 ################################################################################
 class MasterButton(Button):
@@ -558,62 +561,66 @@ class MainWindow(Frame):
         #################################################################################
         self.si =Scroll_Indicator( self.ImageFrame )
         self.ArrowLabel = Label(root)
-        #################################################################################
-        # adding application menu
-        self.menubar = Menu(   master = root )
-        ##### File menu items ##############################
-        self.file_menu = Menu( master = self.menubar, 
-                               tearoff = 0)
-        self.file_menu.add_command( label = "Exit Application", 
-                                    command = self.exit_application )
-        self.menubar.add_cascade( label = 'File', 
-                                  menu  =  self.file_menu)
-        ##### View Menu Items #############################
-        self.view_menu = Menu( master = self.menubar, 
-                               tearoff = 0)
+        # #################################################################################
+        # self.tm = mwm.Main_Window_Menu(root, self) # self being the parent_window in the menu script
+        # # adding application menu
+        # self.menubar = Menu(   master = root )
+        # ##### File menu items ##############################
+        # self.file_menu = Menu( master = self.menubar, 
+        #                        tearoff = 0)
+        # self.file_menu.add_command( label = "Exit Application", 
+        #                             command = self.exit_application )
+        # self.menubar.add_cascade( label = 'File', 
+        #                           menu  =  self.file_menu)
+        # ##### View Menu Items #############################
+        # self.view_menu = Menu( master = self.menubar, 
+        #                        tearoff = 0)
         
-        self.toplevel_1_displayed = BooleanVar()
+        # self.toplevel_1_displayed = BooleanVar()
         
-        self.toplevel_1_displayed.set(True)
+        # self.toplevel_1_displayed.set(True)
         
-        self.toplevel_1_displayed.trace( mode = 'w', 
-                                         callback = self.show_toplevel_1 ) 
+        # self.toplevel_1_displayed.trace( mode = 'w', 
+        #                                  callback = self.show_toplevel_1 ) 
                
-        self.view_menu.add_checkbutton( label = 'Show Top Level (1)',
-                                        onvalue = True,
-                                        offvalue = False,
-                                        variable = self.toplevel_1_displayed)
+        # self.view_menu.add_checkbutton( label = 'Show Top Level (1)',
+        #                                 onvalue = True,
+        #                                 offvalue = False,
+        #                                 variable = self.toplevel_1_displayed)
         
-        self.toplevel_2_displayed = BooleanVar()  
-        self.toplevel_2_displayed.set(True)
+        # self.toplevel_2_displayed = BooleanVar()  
+        # self.toplevel_2_displayed.set(True)
         
-        self.toplevel_2_displayed.trace( mode = 'w', 
-                                         callback = self.show_toplevel_2 ) 
+        # self.toplevel_2_displayed.trace( mode = 'w', 
+        #                                  callback = self.show_toplevel_2 ) 
                
-        self.view_menu.add_checkbutton( label = 'Show Top Level (2)',
-                                        onvalue = True,
-                                        offvalue = False,
-                                        variable = self.toplevel_2_displayed)
+        # self.view_menu.add_checkbutton( label = 'Show Top Level (2)',
+        #                                 onvalue = True,
+        #                                 offvalue = False,
+        #                                 variable = self.toplevel_2_displayed)
      
-        # self.view_menu.add_command( label = "Show Toplevel 1", 
-        #                             command = self.show_toplevel_1 )
-        # self.view_menu.add_command( label = "Show Toplevel 2", 
-        #                             command = self.show_toplevel_2 )
+        # # self.view_menu.add_command( label = "Show Toplevel 1", 
+        # #                             command = self.show_toplevel_1 )
+        # # self.view_menu.add_command( label = "Show Toplevel 2", 
+        # #                             command = self.show_toplevel_2 )
         
-        ####################################################
-        self.menubar.add_cascade( label = 'View', 
-                                  menu  =  self.view_menu)
-        
-        
+        # ####################################################
+        # self.menubar.add_cascade( label = 'View', 
+        #                           menu  =  self.view_menu)
         
         
-        root.configure( menu = self.menubar) # add the actual menubar to the window
-        # NOTE: this MainWindow is NOT derived fro Tk and root is used to show the menu.
+        
+        
+        # root.configure( menu = self.menubar) # add the actual menubar to the window
+        # # NOTE: this MainWindow is NOT derived fro Tk and root is used to show the menu.
         
         #################################################################################
-    def show_toplevel_1(self):
-        pass
-    def show_toplevel_2(self):
+    # def show_toplevel_1(self, *argv):
+    #     print('show_toplevel callback 1')
+    #     print(f'self.toplevel_1_displayed:==  {self.tm.toplevel_1_displayed.get()}')
+
+            
+    def show_toplevel_2(self, *argv):
         pass
         
     def exit_application(self):
@@ -873,6 +880,7 @@ class MainWindow(Frame):
         #######################################################################       
 
 appWin = MainWindow(root)
+
 ################################################################################
 ######################    NOTIFICATION MESSAGE     #############################
 class Notifications:
@@ -998,24 +1006,21 @@ if True:
     # notification_loop 
     nt.Animation()
     ############################################## 
-win1 = tl.create_win1()
-print(id(win1))  
-win1.Test_Print()
-# win1.Init_Messages()
 
-win2 = tl.create_win2()
-print(id(win2))  
-win2.Test_Print()
-# win2.Init_Messages()
-##############################################
+win1 = tl.TopLevelWindow(window_title = 'TopLever -- Win1') 
+win2 = tl.TopLevelWindow(window_title = 'TopLever -- Win2') 
+appMenu = mwm.Main_Window_Menu(root, appWin, win1, win2) # self being the parent_window in the menu script
+
+def For_Test():
+        print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ') 
+        win1.bv_window_status.set(True)       
+        print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ')        
+
+
+###############################################################################
 def wm_delete_window_appWin(): # intercept the MainWindow "X" pressed message
-    appWin.exit_application()
-def wm_delete_window_Win2(): # intercept the MainWindow "X" pressed message
-    print(f'wm_delete_window_Win2 = {wm_delete_window_Win2} ')
-    
-
-    
-tl.win2.wm_protocol(('WM_DELETE_WINDOW', wm_delete_window_Win2))
+    appWin.exit_application()  
+# win1.wm_protocol(('WM_DELETE_WINDOW', wm_delete_window_Win1))
 root.wm_protocol('WM_DELETE_WINDOW', wm_delete_window_appWin)
-
+################################################################################
 mainloop()

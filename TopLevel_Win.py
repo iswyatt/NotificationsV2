@@ -18,9 +18,8 @@ os.system('cls')
 # import InfiniteTimer as ft
 
 
-win1 = object
-win2 = object
-
+# 
+# 
 class Top_Level_Win_Geometry:
     def __init__(self):
         self.height = 800
@@ -68,8 +67,9 @@ class TopLevelWindow(Toplevel):
     The Toplevel window CANNOT be created prior to the main root window,
     or strange thing will happen.
     """
-    def __init__(self, window_title = 'default window title'):
+    def __init__(self, window_title = 'default window title' ):
         super().__init__()
+        # self.parent_window = parent_window
         self.configure (bg = '#333333')
         self.title(window_title)
         self.geometry(gTL.win1_geo_string)
@@ -82,46 +82,61 @@ class TopLevelWindow(Toplevel):
         # attach  to scrollbar
         self.msg_canvas.mv.config( yscrollcommand = self.scrollbar.set)
         self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
-
-        self.wm_protocol('WM_DELETE_WINDOW', self.Test_Print)
-
+        ####################################################################
+        """
+        The Boolvar trace method causes the show_hide_toggle to be called 
+        ANYTIME it is set(). This caused some rece problems with the wm_state() status
+        of the toplevel windows and the value of the Boolvar. This was fixed show_hide_toggle 
+        method by checking that Boolvar and wm_state matached PRIOR to toggling the toplevel
+        windows state.
+        """
+        self.bv_window_status = BooleanVar()
+        self.bv_window_status.trace( mode = 'w', 
+                                     callback = self.show_hide_toggle ) 
+        #####################################################################
+        # wm_protocols to intercept various windows control messages.        
+        # Use the 'X' pressed in window to minimize the window, not destroy it. 
+        # self.wm_protocol('WM_DELETE_WINDOW', self.iconify())
+        """
+        The wm_protocol('WM_DELETE_WINDOW', ...) works when in the init method,
+        it does not seem to work from the main root path.
+        """
+        self.wm_protocol('WM_DELETE_WINDOW', self.hide )
         
-    def Init_Messages(self):
-        mes = Messages(self, (0,0) )
+    def hide(self):
+        # the change in the bv_window_status (trace) causes the show_hide_toggle be 
+        # called, since the wm_state and Boolvar match, the toggle does not occore. 
+        self.wm_iconify()
+        self.bv_window_status.set(False)
+       
+    def show_hide_toggle(self, *argv):
+        # do nothing is the Boolvar and wm_state match, otherwis toggle the window
+        if (self.wm_state() == 'normal') and (self.bv_window_status.get()==True):
+            return 
+        if (self.wm_state() == 'iconic') and (self.bv_window_status.get()==False):
+            return 
+        #print(f'bv_window_status: {self.bv_window_status.get()}, self.wm_state(): {self.wm_state()} ')        
+        # TOGGLE,  Change the window state and set the Boolvar to match
+        if self.wm_state() == 'normal':
+            self.wm_iconify()
+            self.bv_window_status.set(False)
+        else:
+            self.wm_state('normal')
+            self.bv_window_status.set(True)
+        #print(f'bv_window_status: {self.bv_window_status.get()}, self.wm_state(): {self.wm_state()} ')        
+        
         
     def Test_Print(self):
-        print('does test print work?')
+        print( f"self.winfo_geometry():= {self.winfo_geometry()} ")
         
-
-
-# win2 = TopLevelWindow( window_title = 'TopLever Win2') 
-
-
-
-
-
-def create_win2( ):
-    global win2
-    win2 = TopLevelWindow( window_title = 'TopLever Win2')  
-    print(id(win2))
-    print(f'win2.winfo_exists()={win2.winfo_exists()}')
-    return win2   
-
-def create_win1( ):
-    global win1
-    win1 = TopLevelWindow(window_title = 'TopLever Win1')   
-    print(id(win1))
-    return win1   
-
-  
-# ############################################## 
-# def Create_Win1():
-#     Win1 = Toplevel(    bg = 'black',
-#                         height   =   800,
-#                         width    =   300  )
-#     Win1.title('New window Win1')
-#     Win1.geometry('533x1080+1000+100')
-#     Win1.resizable(0,0)
-    
-##############################################
-# win1=TopLevelWindow()
+"""
+NOTE, from documentation
+wm_state()     window ?newstate?
+If newstate is specified, the window will be set to the new state, 
+otherwise it returns the current state of window: 
+either normal, iconic, withdrawn, icon, or (Windows and Mac OS X only) zoomed. 
+The difference between iconic and icon is that iconic refers
+to a window that has been iconified (e.g., with the wm iconify command)
+while icon refers to a window whose only purpose is to serve as the icon 
+for some other window (via the wm iconwindow command). The icon state cannot be set.
+"""
