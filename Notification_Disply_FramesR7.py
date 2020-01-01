@@ -564,64 +564,8 @@ class MainWindow(Frame):
         # #################################################################################
         # self.tm = mwm.Main_Window_Menu(root, self) # self being the parent_window in the menu script
         # # adding application menu
-        # self.menubar = Menu(   master = root )
-        # ##### File menu items ##############################
-        # self.file_menu = Menu( master = self.menubar, 
-        #                        tearoff = 0)
-        # self.file_menu.add_command( label = "Exit Application", 
-        #                             command = self.exit_application )
-        # self.menubar.add_cascade( label = 'File', 
-        #                           menu  =  self.file_menu)
-        # ##### View Menu Items #############################
-        # self.view_menu = Menu( master = self.menubar, 
-        #                        tearoff = 0)
-        
-        # self.toplevel_1_displayed = BooleanVar()
-        
-        # self.toplevel_1_displayed.set(True)
-        
-        # self.toplevel_1_displayed.trace( mode = 'w', 
-        #                                  callback = self.show_toplevel_1 ) 
-               
-        # self.view_menu.add_checkbutton( label = 'Show Top Level (1)',
-        #                                 onvalue = True,
-        #                                 offvalue = False,
-        #                                 variable = self.toplevel_1_displayed)
-        
-        # self.toplevel_2_displayed = BooleanVar()  
-        # self.toplevel_2_displayed.set(True)
-        
-        # self.toplevel_2_displayed.trace( mode = 'w', 
-        #                                  callback = self.show_toplevel_2 ) 
-               
-        # self.view_menu.add_checkbutton( label = 'Show Top Level (2)',
-        #                                 onvalue = True,
-        #                                 offvalue = False,
-        #                                 variable = self.toplevel_2_displayed)
-     
-        # # self.view_menu.add_command( label = "Show Toplevel 1", 
-        # #                             command = self.show_toplevel_1 )
-        # # self.view_menu.add_command( label = "Show Toplevel 2", 
-        # #                             command = self.show_toplevel_2 )
-        
-        # ####################################################
-        # self.menubar.add_cascade( label = 'View', 
-        #                           menu  =  self.view_menu)
-        
-        
-        
-        
-        # root.configure( menu = self.menubar) # add the actual menubar to the window
-        # # NOTE: this MainWindow is NOT derived fro Tk and root is used to show the menu.
-        
+        # moved from here 12/31/2019
         #################################################################################
-    # def show_toplevel_1(self, *argv):
-    #     print('show_toplevel callback 1')
-    #     print(f'self.toplevel_1_displayed:==  {self.tm.toplevel_1_displayed.get()}')
-
-            
-    def show_toplevel_2(self, *argv):
-        pass
         
     def exit_application(self):
         # shoutdown times and distroy widgits, primarly from the menu or x commands
@@ -804,10 +748,8 @@ class MainWindow(Frame):
         if self.scroll_up_down  >= ac.mMsg_count.END_of_CAS_MSG  :  # just off the top of screen
             self.scroll_up_down =  ac.mMsg_count.END_of_CAS_MSG     # and no CAS is displayed, only EN
         
-        # Get the number of red CAS in the active DB. 
-        # if there are any red, there is no scrolling,
-        # the CCue icon should not be show. 
-        # ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
+        # Get the number of red CAS in the active DB. if there are any red, there is no scrolling,
+        # the CCue icon should not be show.  ALLOW_NEVER = 0;  ALLOW_WHEN_ACK = 1; ALLOW_ALL = 2       
         rtn_tuple = cc.Scrolling_with_RedCAS_Control(  self.scroll_up_down, 
                                                        ac.mMsg_count.AllCasTuple )       
         self.scroll_up_down  = rtn_tuple[0]
@@ -817,7 +759,7 @@ class MainWindow(Frame):
         temp = min( self.scroll_up_down + gv.possable_num_of_CASMsg, ac.mMsg_count.END_of_CAS_MSG )
         self.CAS_on_screen          = (self.scroll_up_down, temp)   
                      
-        self.CAS_off_screen_high    = (0, self.CAS_on_screen[0] ) #- 1   )  
+        self.CAS_off_screen_high    = (0, self.CAS_on_screen[0] )  
         
         self.CAS_off_screen_low     = (self.CAS_on_screen[1] ,  ac.mMsg_count.END_of_CAS_MSG)    
         

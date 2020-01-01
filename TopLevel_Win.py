@@ -31,11 +31,6 @@ class Top_Level_Win_Geometry:
 
 gTL = Top_Level_Win_Geometry()
 
-
-
-
-
-
 class Messages:
     def __init__(self, contex = None,  msg_point = (0,0)): 
         self.contex = contex                
@@ -65,7 +60,7 @@ class Messages:
 class TopLevelWindow(Toplevel):
     """
     The Toplevel window CANNOT be created prior to the main root window,
-    or strange thing will happen.
+    or strange thing will happen; they are created in the main script, with the root
     """
     def __init__(self, window_title = 'default window title' ):
         super().__init__()
