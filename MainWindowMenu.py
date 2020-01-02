@@ -16,6 +16,7 @@ class Main_Window_Menu:
   #################################################################################
         # adding application menu
         self.menubar = Menu(   master = self.master )
+        
         ##### File menu items ##############################
         self.file_menu = Menu( master = self.menubar, 
                                tearoff = 0)

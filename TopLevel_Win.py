@@ -35,7 +35,7 @@ class Messages:
     def __init__(self, contex = None,  msg_point = (0,0)): 
         self.contex = contex                
         self.mv = Canvas(contex) 
-        self.mv.configure(width  = gTL.message_rect[2]-10)
+        self.mv.configure(width  = gTL.message_rect[2]-15)
         self.mv.configure(height = gTL.message_rect[3])
         self.mv.configure(highlightthickness = 0)
         self.mv.configure(background = 'pink')
@@ -77,13 +77,33 @@ class TopLevelWindow(Toplevel):
         # attach  to scrollbar
         self.msg_canvas.mv.config( yscrollcommand = self.scrollbar.set)
         self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
+        self.menu_configuration()
         ####################################################################
+        
+        
+    #########################################################################
+    # Menu items follow
+    #########################################################################    
+
+    def menu_configuration(self):
+        # the method seperates the menu function for organization.
+        # the menu motheds ate: hide(), show_hide_toggle(), and this one
         """
         The Boolvar trace method causes the show_hide_toggle to be called 
         ANYTIME it is set(). This caused some rece problems with the wm_state() status
         of the toplevel windows and the value of the Boolvar. This was fixed show_hide_toggle 
         method by checking that Boolvar and wm_state matached PRIOR to toggling the toplevel
         windows state.
+                
+        NOTE, from documentation
+        wm_state()     window ?newstate?
+        If newstate is specified, the window will be set to the new state, 
+        otherwise it returns the current state of window: 
+        either normal, iconic, withdrawn, icon, or (Windows and Mac OS X only) zoomed. 
+        The difference between iconic and icon is that iconic refers
+        to a window that has been iconified (e.g., with the wm iconify command)
+        while icon refers to a window whose only purpose is to serve as the icon 
+        for some other window (via the wm iconwindow command). The icon state cannot be set.
         """
         self.bv_window_status = BooleanVar()
         self.bv_window_status.trace( mode = 'w', 
@@ -124,14 +144,4 @@ class TopLevelWindow(Toplevel):
     def Test_Print(self):
         print( f"self.winfo_geometry():= {self.winfo_geometry()} ")
         
-"""
-NOTE, from documentation
-wm_state()     window ?newstate?
-If newstate is specified, the window will be set to the new state, 
-otherwise it returns the current state of window: 
-either normal, iconic, withdrawn, icon, or (Windows and Mac OS X only) zoomed. 
-The difference between iconic and icon is that iconic refers
-to a window that has been iconified (e.g., with the wm iconify command)
-while icon refers to a window whose only purpose is to serve as the icon 
-for some other window (via the wm iconwindow command). The icon state cannot be set.
-"""
+
