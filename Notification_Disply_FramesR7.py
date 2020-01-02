@@ -949,8 +949,8 @@ if True:
     nt.Animation()
     ############################################## 
 
-win1 = tl.TopLevelWindow(window_title = 'TopLever -- Win1') 
-win2 = tl.TopLevelWindow(window_title = 'TopLever -- Win2') 
+win1 = tl.TopLevelWindow(window_title = 'TopLevel Win1') 
+win2 = tl.TopLevelWindow(window_title = 'TopLevel Win2') 
 appMenu = mwm.Main_Window_Menu(root, appWin, win1, win2) # self being the parent_window in the menu script
 
 def For_Test():
