@@ -19,6 +19,8 @@ class Main_Window_Menu:
         ##### File menu items ##############################
         self.file_menu = Menu( master = self.menubar, 
                                tearoff = 0)
+        self.file_menu.add_command( label = 'tbd',
+                                    state = 'disabled')
         self.file_menu.add_command( label = "Exit Application", 
                                     command = self.parent_window.exit_application )
         self.menubar.add_cascade( label = 'File', 
