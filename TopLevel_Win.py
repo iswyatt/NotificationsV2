@@ -10,6 +10,7 @@ import datetime
 import os 
 os.system('cls')
 import Canvas_Scrollable_Frame as csf
+import Input_Bindings_Class as ibc
 # import active_CAS7 as ac
 # from MyEnumerations import e
 # import math
@@ -79,6 +80,7 @@ class TopLevelWindow(Toplevel):
         self.msg_canvas.mv.config( yscrollcommand = self.scrollbar.set)
         self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
         self.menu_configuration()
+        self.bindings = ibc.Bindings(self)
         ####################################################################
         
         
