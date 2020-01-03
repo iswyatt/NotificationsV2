@@ -9,6 +9,7 @@ import time
 import datetime
 import os 
 os.system('cls')
+import Canvas_Scrollable_Frame as csf
 # import active_CAS7 as ac
 # from MyEnumerations import e
 # import math
@@ -68,7 +69,7 @@ class TopLevelWindow(Toplevel):
         self.configure (bg = '#333333')
         self.title(window_title)
         self.geometry(gTL.win1_geo_string)
-        self.resizable(0,0)
+        # self.resizable(0,0)
         self.msg_frames = []
         self.scrollbar = Scrollbar(self)
         self.scrollbar.pack( side = RIGHT,

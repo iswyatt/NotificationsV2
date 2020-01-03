@@ -954,9 +954,13 @@ win2 = tl.TopLevelWindow(window_title = 'TopLevel Win2')
 appMenu = mwm.Main_Window_Menu(root, appWin, win1, win2) # self being the parent_window in the menu script
 
 def For_Test():
+    root.update_idletasks()
     print('Call from Notification Master Button to the For_Test function')
-    
-    
+    print(f'winfo_screenheight(): {root.winfo_screenheight()}, win1: {win1.winfo_screenheight()}')
+    print(f'winfo_y(): {root.winfo_y()}, win1: {win1.winfo_y()}')    
+    print(f'winfo_rooty(): {root.winfo_rooty()}, win1: {win1.winfo_rooty()}') 
+    print(f'winfo_vrootheight(): {root.winfo_vrootheight()}, win1: {win1.winfo_vrootheight()}') 
+    print(f'winfo_height(): {root.winfo_height()}, win1: {win1.winfo_height()}')     
         # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ') 
         # win1.bv_window_status.set(True)       
         # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ')        
