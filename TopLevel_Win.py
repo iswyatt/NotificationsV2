@@ -19,9 +19,6 @@ import Input_Bindings_Class as ibc
 # from Notifications_Message import temp
 # import InfiniteTimer as ft
 
-
-# 
-# 
 class Top_Level_Win_Geometry:
     def __init__(self):
         """
@@ -71,60 +68,84 @@ class Messages:
         # self.mv.pack()   
                
         
-        
-               
 class TopLevelWindow(Toplevel):
     """
     The Toplevel window CANNOT be created prior to the main root window,
-    or strange thing will happen; they are created in the main script, with the root
-    """
+    or strange thing will happen; they are created in the main script, with the root.
+    
+    The actual_size_win, is the curren width and height of the top-level window. 
+    The scroll frame determems its width (sf_width) after the vsd (vertical scrollbar) 
+    is known. 
+    
+    The TL windows width is from the sf_width and how many sf's there are present 
+    in the TL window.
+    
+    The height of the scrollable_frame, is a function of the TL windows's height, 
+    as the user changes the window height the internal sf(s) must also resize.
+    
+    topLevel_height=> Scrollable_Canvas(s) dynamaticelly as window is resized,  
+    scrollframe_width => TopLevelWindow once the sum of message area and vsb widths are known. 
+    
+    """     
     def __init__(self, window_title = 'default window title' ):
         super().__init__()
         self.configure (bg = '#333333')
         self.title(window_title)
         self.geometry(gTL.win1_geo_string)
         # self.resizable(0,0)
-        
+
         self.menu_configuration()
         # USE as needed ////  self.bindings = ibc.Bindings(self)
-        delta =30
-        self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
-        self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
-        # self.s_frame2 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
-        # self.s_frame3 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        self.configure(borderwidth = 2)
+               
+    #     self.init_scroll_window()
         
         
+    # def init_scroll_window(self):
         
+    #     self.scrollframe_width = 0 # placehoder value, updated with vsb and msg widths         
         
-        
-                     
-        self.width = self.s_frame.width_of_scrolling_window
-        
+    #     delta =30
 
-        ####################################################################
-        # binding any configuration change, to capture window width and 
-        # height infromation. 
-        self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
-        ####################################################################
-        
-        self.set_TL_width()
-        
-    def set_TL_width(self):    
-        gTL.win_geometric_width = self.s_frame.width_of_scrolling_window + self.s_frame.vsb_width
-        # print(f'window width: {self.winfo_width()}, gTL: {gTL.win_geometric_width}   ')
-        self.geometry(f'{gTL.win_geometric_width}x{self.winfo_height()}')
-
-    def window_configure_change(self, event):
-        """
-        The recieved event data is as follows:
-        <Configure event x=1375 y=222 width=374 height=498>
-        The event.height value goes krezzy with scrolling,
-        use the winfo_xxxx values, updated here with the <Configure> binding
-        """
-        # print(f' config change, event.height: {temp}, vsb: {self.s_frame.vsb_width}')
-        self.s_frame.height_of_scrolling_window = self.winfo_height() - gTL.tab_height - gTL.win_border
+    #     self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+    #     self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
+    #     # self.s_frame2 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+    #     # self.s_frame3 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
                 
-        self.s_frame.update_geometry()
+    #     self.width = self.s_frame.width_of_scrolling_msg
+        
+
+    #     ####################################################################
+    #     # binding any configuration change, to capture window width and 
+    #     # height infromation. 
+    #     self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
+    #     ####################################################################
+        
+    #     self.set_TL_width(2)
+        
+        
+    # def call_from_child(self):
+    #     print('call from child')  
+        
+        
+              
+    # def set_TL_width(self, num_of_sf = 1): 
+    #     # default number of scrollable frames is 1   
+    #     if self.scrollframe_width > 0 :          
+    #         self.geometry(  f'{self.scrollframe_width * num_of_sf}x{self.winfo_height()}'  )
+           
+    # def window_configure_change(self, event):
+    #     """
+    #     The recieved event data is as follows:
+    #     <Configure event x=1375 y=222 width=374 height=498>
+    #     The event.height value goes krezzy with scrolling,
+    #     use the winfo_xxxx values, updated here with the <Configure> binding
+    #     """
+    #     print(f' config change: height: {self.winfo_height()}, width: {self.winfo_width()}')
+        
+    #     self.s_frame.height_of_scrolling_frame = self.winfo_height() - gTL.tab_height - gTL.win_border
+                
+    #     self.s_frame.update_geometry()
         
     #########################################################################
     # Menu items follow
@@ -189,3 +210,68 @@ class TopLevelWindow(Toplevel):
         print( f"self.winfo_geometry():= {self.winfo_geometry()} ")
         
 
+class Scroll_Window(TopLevelWindow):
+    def __init__(self, window_title = 'default window title', test=0 ):
+        super().__init__(window_title)
+        print(f'class Scroll_Wondow(TopLevelWindow, test valur: {test}):')
+        new_title = f' {window_title}==>>{test} '
+        self.title( new_title )
+##############################################################################################        
+        self.init_scroll_window()
+        
+        
+    def init_scroll_window(self):
+        
+        self.scrollframe_width = 0 # placehoder value, updated with vsb and msg widths         
+        
+        delta =30
+
+        self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
+        # self.s_frame2 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        # self.s_frame3 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+                
+        self.width = self.s_frame.width_of_scrolling_msg
+        
+
+        ####################################################################
+        # binding any configuration change, to capture window width and 
+        # height infromation. 
+        self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
+        ####################################################################
+        
+        self.set_TL_width(2)
+        
+        
+    def call_from_child(self):
+        print('call from child')  
+        
+        
+              
+    def set_TL_width(self, num_of_sf = 1): 
+        # default number of scrollable frames is 1   
+        if self.scrollframe_width > 0 :          
+            self.geometry(  f'{self.scrollframe_width * num_of_sf}x{self.winfo_height()}'  )
+           
+    def window_configure_change(self, event):
+        """
+        The recieved event data is as follows:
+        <Configure event x=1375 y=222 width=374 height=498>
+        The event.height value goes krezzy with scrolling,
+        use the winfo_xxxx values, updated here with the <Configure> binding
+        """
+        print(f' config change: height: {self.winfo_height()}, width: {self.winfo_width()}')
+        
+        self.s_frame.height_of_scrolling_frame = self.winfo_height() - gTL.tab_height - gTL.win_border
+                
+        self.s_frame.update_geometry()
+        
+        
+        
+        
+        
+        
+        
+    
+class TIU_Window(TopLevelWindow):
+    print('class TIU_Window(TopLevelWindow):')    

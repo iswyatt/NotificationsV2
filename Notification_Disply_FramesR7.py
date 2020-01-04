@@ -1,8 +1,9 @@
 
 import loop_Timer_Module as ltm
 from tkinter import *
-from tkinter import ttk
+# from tkinter import ttk
 import tkinter.font as font
+
 # uses pillow the PIL import
 from PIL import Image, ImageTk
 import time 
@@ -935,6 +936,7 @@ def Notification_Animation_Timer( start = True):
 if False:
     # Timer off 
     # True or False in this if statement activates (or not) the start and loading
+    
     # of the CAS messages.
     # 1. the Msg_Count_loop is a one second continous loop the calls the 
     #    appWin (main window) MessaheController to control process. 
@@ -949,8 +951,13 @@ if False:
     nt.Animation()
     ############################################## 
 
-win1 = tl.TopLevelWindow(window_title = 'TopLevel Win1') 
-win2 = tl.TopLevelWindow(window_title = 'TopLevel Win2') 
+# win1 = tl.TopLevelWindow(window_title = 'TopLevel Win1')
+
+# win2 = tl.TopLevelWindow(window_title = 'TopLevel Win2') 
+
+win1 = tl.Scroll_Window(window_title = 'Data Entry', test = 101)
+win2 = tl.TIU_Window(window_title = ' TIU ')
+
 appMenu = mwm.Main_Window_Menu(root, appWin, win1, win2) # self being the parent_window in the menu script
 
 def For_Test():
@@ -960,12 +967,20 @@ def For_Test():
     print(f'winfo_y(): {root.winfo_y()}, win1: {win1.winfo_y()}')    
     print(f'winfo_rooty(): {root.winfo_rooty()}, win1: {win1.winfo_rooty()}') 
     print(f'winfo_vrootheight(): {root.winfo_vrootheight()}, win1: {win1.winfo_vrootheight()}') 
+    
+    print('--------------------------------------------------------------------')
     print(f'winfo_height(): {root.winfo_height()}, win1: {win1.winfo_height()}') 
         
-        # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ') 
-        # win1.bv_window_status.set(True)       
-        # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ')        
     print(f'winfo_width(): {root.winfo_width()}, win1: {win1.winfo_width()}') 
+    print('--------------------------------------------------------------------')
+    print(f'winfo_reqheight(): {root.winfo_reqheight()}, win1: {win1.winfo_reqheight()}') 
+        
+    print(f'winfo_reqwidth(): {root.winfo_reqwidth()}, win1: {win1.winfo_reqwidth()}') 
+    
+    
+    print(root.configure())
+    
+    
 
 ###############################################################################
 def wm_delete_window_appWin(): # intercept the MainWindow "X" pressed message
