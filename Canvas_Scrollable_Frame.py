@@ -39,20 +39,33 @@ class Scrollable_Canvas():
                                     lambda e: self.canvas.configure( scrollregion=self.canvas.bbox("all") ))
         self.canvas.create_window((0, 0), window = self.scrollable_frame, anchor="nw")
         ### def sb_process_295(vsb, canvas):
-        self.context.update_idletasks()
-        # height_of_scrolling_window = 500
-        self.width_of_scrolling_window = self.width_of_scrolling_window - self.vsb.winfo_width()
-        self.canvas.configure( width =  self.width_of_scrolling_window, 
-                               height = self.height_of_scrolling_window)
-        ### def sb_process_210(vsb, canvas):
-        # frame_main_1.pack()
+        ### Geometry calculation moved to be accomplished after the content is produced. 
+        ### If done earler, the vsb width is not correct. 
+        #####################################################################
+        ### pack canvas and scrollbars, geometry updated after content
         self.canvas.pack(side="left", fill="both", expand=True)
         self.vsb.pack(side="right", fill="y")
         ### end of 210
+        ##################
         self.sb_content()
-    #########################################################################    
+        ##################
+        self.set_inital_geometry()
+        self.update_geometry()
+    #########################################################################   
+    def set_inital_geometry(self):
+        self.context.update_idletasks()
+        self.vsb_width = self.vsb.winfo_width()        
+        self.width_of_scrolling_window = self.width_of_scrolling_window# + self.vsb_width
+        
+    def update_geometry(self):
+        ### this method is called whenever there is a window <Configure> charge from binding       
+
+        self.canvas.configure( width =  self.width_of_scrolling_window, 
+                               height = self.height_of_scrolling_window)
+        
+         
     def sb_content(self):
-                # CONTENT OF THE SCROLL FRAME GOES HERE 
+        # CONTENT OF THE SCROLL FRAME GOES HERE 
         """
         Below, a image is displayed in a Label, i.e. the img_label.
         The width MAY BE limited by setting the width.
@@ -60,19 +73,31 @@ class Scrollable_Canvas():
         if True: # show or hide picture
             load = Image.open("Penguins.jpg")
             render = ImageTk.PhotoImage(load)
-            img_label = tk.Label( self.scrollable_frame, 
-                                  image = render)
+            img_label = tk.Label( master = self.scrollable_frame, 
+                                  image  = render)
             img_label.configure(width = 300)
             img_label.configure(height = 300)    
             img_label.image = render
             img_label.grid(row = 0, column = 0)  
             
         for i in range(50):
-            l = tk.Label( self.scrollable_frame, 
-                        text=f"{i}...in the scrollable_frame " , 
-                        anchor = 'w',
-                        width = 40)
-            l.grid(row = i+1, column = 0, sticky = 'w')
+            mcolor = '#%06x' % random.randint(0, 0xFFFFFF)
+            label_frame = tk.Frame( master = self.scrollable_frame,
+                                    width  = 300, 
+                                    height = 30, 
+                                    bg     = mcolor)
+            label_frame.grid(row = i+1, column = 0, sticky = 'w')
+            
+            label_frame.pack_propagate(0)           
+            
+            label = tk.Label(   master = label_frame, 
+                                text=f"{i}...in the scrollable_frame " , 
+                                anchor = 'w',
+                                width = 24)
+            label.pack_propagate(0)
+            label.pack( fill='none',
+                        side = 'left')
+                        
 #########################################################################
         
         

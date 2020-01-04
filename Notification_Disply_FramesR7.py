@@ -932,7 +932,7 @@ def Notification_Animation_Timer( start = True):
     else:
         return  #print('Continuing with Notification_Animation_Timer running')    
 ##############################################
-if True:
+if False:
     # Timer off 
     # True or False in this if statement activates (or not) the start and loading
     # of the CAS messages.
@@ -960,11 +960,12 @@ def For_Test():
     print(f'winfo_y(): {root.winfo_y()}, win1: {win1.winfo_y()}')    
     print(f'winfo_rooty(): {root.winfo_rooty()}, win1: {win1.winfo_rooty()}') 
     print(f'winfo_vrootheight(): {root.winfo_vrootheight()}, win1: {win1.winfo_vrootheight()}') 
-    print(f'winfo_height(): {root.winfo_height()}, win1: {win1.winfo_height()}')     
+    print(f'winfo_height(): {root.winfo_height()}, win1: {win1.winfo_height()}') 
+        
         # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ') 
         # win1.bv_window_status.set(True)       
         # print(f' root bv_window_status: {win1.bv_window_status.get()}, win1.wm_state(): {win1.wm_state()} ')        
-
+    print(f'winfo_width(): {root.winfo_width()}, win1: {win1.winfo_width()}') 
 
 ###############################################################################
 def wm_delete_window_appWin(): # intercept the MainWindow "X" pressed message

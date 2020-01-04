@@ -24,13 +24,24 @@ import Input_Bindings_Class as ibc
 # 
 class Top_Level_Win_Geometry:
     def __init__(self):
-        self.height = 800
-        self.width  = int((4/9) * self.height)
-        self.win1_geo_string = '{}x{}+1000+100'.format(self.width, self.height) 
-        self.msg_width = self.width
+        """
+        1. Top lever geometry starts with the size of the individual messages.
+        2. The with of the vertical scrollbar is added to the msg width to 
+            get the witdth of the tab_frame.
+        
+        """
+        ### geometry of the messages #########
+        self.msg_width = 300
         self.msg_height = 30
         self.message_rect = (0,0, self.msg_width, self.msg_height) 
-
+        ####### Geometry of window frames ###################
+        self.tab_height  = 35# the height of the button tabs
+        self.num_of_tabs = 4
+        self.win_border  = 5
+        ### inital window dimensions, will be updated during initilization
+        self.win1_geo_string = '{}x{}+1000+100'.format(333, 666) 
+        
+        
 gTL = Top_Level_Win_Geometry()
 
 class Messages:
@@ -66,28 +77,42 @@ class TopLevelWindow(Toplevel):
     """
     def __init__(self, window_title = 'default window title' ):
         super().__init__()
-        # self.parent_window = parent_window
         self.configure (bg = '#333333')
         self.title(window_title)
         self.geometry(gTL.win1_geo_string)
         # self.resizable(0,0)
-        self.msg_frames = []
-        self.scrollbar = Scrollbar(self)
-        self.scrollbar.pack( side = RIGHT,
-                             fill = Y)
-        self.msg_canvas = Messages(self, (0,100))
-        # attach  to scrollbar
-        self.msg_canvas.mv.config( yscrollcommand = self.scrollbar.set)
-        self.scrollbar.config(     command        = self.msg_canvas.mv.yview)
-        self.menu_configuration()
-        self.bindings = ibc.Bindings(self)
-        ####################################################################
+
         
+        self.menu_configuration()
+        # USE as needed ////
+        self.bindings = ibc.Bindings(self)
+        
+        self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        
+        self.width = self.s_frame.width_of_scrolling_window
+        
+        
+        # print(f'vsb: = {self.scrollable_frame.vsb_width}')
+        ####################################################################
+        # binding any configuration change, to capture window width and 
+        # height infromation. 
+        self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
+        ####################################################################  
+        
+    def window_configure_change(self, event):
+        """
+        The recieved event data is as follows:
+        <Configure event x=1375 y=222 width=374 height=498>
+        The event.height value goes krezzy with scrolling,
+        use the winfo_xxxx values, updated here with the <Configure> binding
+        """
+        # print(f' config change, event.height: {temp}, vsb: {self.s_frame.vsb_width}')
+        self.s_frame.height_of_scrolling_window = self.winfo_height() - gTL.tab_height - gTL.win_border
+        self.s_frame.update_geometry()
         
     #########################################################################
     # Menu items follow
-    #########################################################################    
-
+    #########################################################################                
     def menu_configuration(self):
         # the method seperates the menu function for organization.
         # the menu motheds ate: hide(), show_hide_toggle(), and this one
@@ -98,7 +123,7 @@ class TopLevelWindow(Toplevel):
         method by checking that Boolvar and wm_state matached PRIOR to toggling the toplevel
         windows state.
                 
-        NOTE, from documentation
+        Note, from documentation
         wm_state()     window ?newstate?
         If newstate is specified, the window will be set to the new state, 
         otherwise it returns the current state of window: 
