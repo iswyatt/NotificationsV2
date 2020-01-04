@@ -39,8 +39,11 @@ class Top_Level_Win_Geometry:
         self.num_of_tabs = 4
         self.win_border  = 5
         ### inital window dimensions, will be updated during initilization
-        self.win1_geo_string = '{}x{}+1000+100'.format(333, 666) 
-        
+        self.win_geometry_width = 333 # arbitary value, it is updated with the vsb and mouse re-sizing
+        self.win1_geo_string = '{}x{}+1000+100'.format(self.win_geometry_width, 666) 
+        # vsb -width is updates after the s_frame creation and use to controm window width 
+        # In the <Configure> callback, width is controlled to adjust the the multiapale sb sizes 
+        self.vsb_width = 17 # estament, updated by program
         
 gTL = Top_Level_Win_Geometry()
 
@@ -81,24 +84,36 @@ class TopLevelWindow(Toplevel):
         self.title(window_title)
         self.geometry(gTL.win1_geo_string)
         # self.resizable(0,0)
-
         
         self.menu_configuration()
-        # USE as needed ////
-        self.bindings = ibc.Bindings(self)
-        
+        # USE as needed ////  self.bindings = ibc.Bindings(self)
+        delta =30
         self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
+        # self.s_frame2 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
+        # self.s_frame3 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
         
+        
+        
+        
+        
+                     
         self.width = self.s_frame.width_of_scrolling_window
         
-        
-        # print(f'vsb: = {self.scrollable_frame.vsb_width}')
+
         ####################################################################
         # binding any configuration change, to capture window width and 
         # height infromation. 
         self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
-        ####################################################################  
+        ####################################################################
         
+        self.set_TL_width()
+        
+    def set_TL_width(self):    
+        gTL.win_geometric_width = self.s_frame.width_of_scrolling_window + self.s_frame.vsb_width
+        # print(f'window width: {self.winfo_width()}, gTL: {gTL.win_geometric_width}   ')
+        self.geometry(f'{gTL.win_geometric_width}x{self.winfo_height()}')
+
     def window_configure_change(self, event):
         """
         The recieved event data is as follows:
@@ -108,6 +123,7 @@ class TopLevelWindow(Toplevel):
         """
         # print(f' config change, event.height: {temp}, vsb: {self.s_frame.vsb_width}')
         self.s_frame.height_of_scrolling_window = self.winfo_height() - gTL.tab_height - gTL.win_border
+                
         self.s_frame.update_geometry()
         
     #########################################################################

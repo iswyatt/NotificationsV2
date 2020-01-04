@@ -56,7 +56,7 @@ class Scrollable_Canvas():
         self.context.update_idletasks()
         self.vsb_width = self.vsb.winfo_width()        
         self.width_of_scrolling_window = self.width_of_scrolling_window# + self.vsb_width
-        
+        # set the 
     def update_geometry(self):
         ### this method is called whenever there is a window <Configure> charge from binding       
 
@@ -70,7 +70,7 @@ class Scrollable_Canvas():
         Below, a image is displayed in a Label, i.e. the img_label.
         The width MAY BE limited by setting the width.
         """
-        if True: # show or hide picture
+        if False: # show or hide picture
             load = Image.open("Penguins.jpg")
             render = ImageTk.PhotoImage(load)
             img_label = tk.Label( master = self.scrollable_frame, 
@@ -80,7 +80,7 @@ class Scrollable_Canvas():
             img_label.image = render
             img_label.grid(row = 0, column = 0)  
             
-        for i in range(50):
+        for i in range(150):
             mcolor = '#%06x' % random.randint(0, 0xFFFFFF)
             label_frame = tk.Frame( master = self.scrollable_frame,
                                     width  = 300, 
