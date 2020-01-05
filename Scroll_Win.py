@@ -85,7 +85,7 @@ class Scroll_Window(TopLevelWindow):
         # self.s_frame.cls_height_of_scrolling_frame = self.winfo_height() - gTL.tab_height - gTL.win_border
         csf.Scrollable_Canvas.cls_height_of_scrolling_frame = self.winfo_height() - gTL.tab_height - gTL.win_border
                
-        self.s_frame.update_geometry()
-        self.s_frame1.update_geometry()
+        self.s_frame.update_canvas()
+        self.s_frame1.update_canvas()
         
         

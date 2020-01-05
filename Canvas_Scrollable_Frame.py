@@ -83,10 +83,10 @@ class Scrollable_Canvas():
         self.vsb.pack(side="right", fill="y")
         ### end of 210
         ##################
-        self.sb_content()
+        self.sb_content()  ## PLACE THE SCROLLING MESSAGES IN THIS METHOD
         ##################
         self.set_inital_geometry()
-        self.update_geometry()
+        self.update_canvas()
         self.call_parent()
         self.init_tabs()
     ######################################################################### 
@@ -94,29 +94,36 @@ class Scrollable_Canvas():
         self.tb =   Tabs(   context = self.context,
                             place_x =  0,
                             place_y = 0,
-                            width = 300,
+                            width = Scrollable_Canvas.cls_width_of_scrolling_frame,
                             height = 30  )
-        
+    ######################################################################### 
         self.tb.tab_frame.place( x = self.x_place, y = 0  )
 
     def call_parent(self):
         print('call parent')
-        ## this tells the parent that the scrollframe width is set.
-#self.context.call_from_child()  
+        ## this tells the parent that the scrollframe width is set. UPDATE, NOT NECESSARY
+        self.context.call_from_child()  
         
         
     def set_inital_geometry(self):
         self.context.update_idletasks()
         Scrollable_Canvas.cls_vsb_width = self.vsb.winfo_width() 
-        ### set the sf with in the parent toplevel window       
-        self.context.scrollframe_width = Scrollable_Canvas.cls_width_of_scrolling_msg + Scrollable_Canvas.cls_vsb_width
+        ### set the sf with in the parent toplevel window  
+        Scrollable_Canvas.cls_width_of_scrolling_frame  = Scrollable_Canvas.cls_width_of_scrolling_msg + Scrollable_Canvas.cls_vsb_width    
+        self.context.scrollframe_width = Scrollable_Canvas.cls_width_of_scrolling_frame
         
-    def update_geometry(self):
+    def update_canvas(self):
+        ### Each instance of the canvas must be updated with the class variables,
+        ### for that reasion a cls @classmethod method will not work
         ### this method is called whenever there is a window <Configure> charge from binding       
 
-        self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
+        # self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
+        #                        height = Scrollable_Canvas.cls_height_of_scrolling_frame)
+
+        self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_frame, 
                                height = Scrollable_Canvas.cls_height_of_scrolling_frame)
-        
+
+   
          
     def sb_content(self):
         # CONTENT OF THE SCROLL FRAME GOES HERE 
