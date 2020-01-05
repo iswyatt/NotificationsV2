@@ -21,6 +21,10 @@ import InfiniteTimer as ft
 import TopLevel_Win as tl
 
 import MainWindowMenu as mwm
+
+from Scroll_Win import Scroll_Window
+
+from TIU_Window import TIU_Window
 ##############################################
 root = Tk()
 ##############################################
@@ -955,8 +959,8 @@ if False:
 
 # win2 = tl.TopLevelWindow(window_title = 'TopLevel Win2') 
 
-win1 = tl.Scroll_Window(window_title = 'Data Entry', test = 101)
-win2 = tl.TIU_Window(window_title = ' TIU ')
+win1 = Scroll_Window(window_title = 'Data Entry', test = 101)
+win2 = TIU_Window(window_title = ' TIU ')
 
 appMenu = mwm.Main_Window_Menu(root, appWin, win1, win2) # self being the parent_window in the menu script
 

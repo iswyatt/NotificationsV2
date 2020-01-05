@@ -23,19 +23,30 @@ class Tabs():
                                 )        
 
 class Scrollable_Canvas():
-    num_of_tabs = 0
-    
+    cls_num_of_tabs = 4
+    cls_width_of_scrolling_msg = 0  # message width without the 
+    cls_vsb_width = 0               # width of the scrollbar
+    cls_width_of_scrolling_frame = 0   # total width, messages and the vsb
+    cls_height_of_scrolling_frame = 0  # height of the scrolling messages(i.e. the vsb height)
+    cls_tab_height = 20             # height of the selector tabs 
+    cls_top_label_height = 15       # height of the label just below the tabs
+    cls_top_frame_height =  600     # cls_tab_height + cls_top_label_height   
+                                   
     
     def __init__(self, context, x_place, y_place, width_of_scrolling_msg, height_of_scrolling_frame ):
         ######## class variables ################
-        Scrollable_Canvas.num_of_tabs += 1
-        print(f"Scrollable_Canvas # {Scrollable_Canvas.num_of_tabs}")
+        Scrollable_Canvas.cls_num_of_tabs += 1
+        print(f"Scrollable_Canvas # {Scrollable_Canvas.cls_num_of_tabs}")
         self.context = context
         self.x_place = x_place
         self.y_place = y_place
-        self.width_of_scrolling_msg  = width_of_scrolling_msg
-        self.height_of_scrolling_frame = height_of_scrolling_frame
-        self.scrollframe_width = IntVar() # callback when scroll_frame is updated, call_parent()
+        
+        Scrollable_Canvas.cls_width_of_scrolling_msg  = width_of_scrolling_msg
+        
+        Scrollable_Canvas.cls_height_of_scrolling_frame = height_of_scrolling_frame
+        
+#self.scrollframe_width = IntVar() # callback when scroll_frame is updated, call_parent()
+        
         # the width and height of frame as no effect,
         # use the dimentions of the canvas values.  
         self.frame_main_1 = Frame( self.context)
@@ -48,16 +59,21 @@ class Scrollable_Canvas():
         ### def sb_process_172(frame_main_1, canvas):
         # Link a scrollbar to the canvas
         self.vsb = Scrollbar( master  = self.frame_main_1, 
-                                 orient  = "vertical", 
-                                 command = self.canvas.yview)
+                              orient  = "vertical", 
+                              command = self.canvas.yview)
+        
         self.canvas.configure(yscrollcommand = self.vsb.set)
         ### def sb_process_176(canvas):
         # Make a scrollable frame linked to the canvas
         # and a window in the canvas holding the scrollable frame
         self.scrollable_frame = Frame(self.canvas)
+
         self.scrollable_frame.bind( "<Configure>", 
                                     lambda e: self.canvas.configure( scrollregion=self.canvas.bbox("all") ))
-        self.canvas.create_window((0, 0), window = self.scrollable_frame, anchor="nw")
+
+        self.canvas.create_window( (0, 0), 
+                                   window = self.scrollable_frame, 
+                                   anchor="nw")
         ### def sb_process_295(vsb, canvas):
         ### Geometry calculation moved to be accomplished after the content is produced. 
         ### If done earler, the vsb width is not correct. 
@@ -86,20 +102,20 @@ class Scrollable_Canvas():
     def call_parent(self):
         print('call parent')
         ## this tells the parent that the scrollframe width is set.
-        self.context.call_from_child()  
+#self.context.call_from_child()  
         
         
     def set_inital_geometry(self):
         self.context.update_idletasks()
-        self.vsb_width = self.vsb.winfo_width() 
+        Scrollable_Canvas.cls_vsb_width = self.vsb.winfo_width() 
         ### set the sf with in the parent toplevel window       
-        self.context.scrollframe_width = self.width_of_scrolling_msg + self.vsb_width
+        self.context.scrollframe_width = Scrollable_Canvas.cls_width_of_scrolling_msg + Scrollable_Canvas.cls_vsb_width
         
     def update_geometry(self):
         ### this method is called whenever there is a window <Configure> charge from binding       
 
-        self.canvas.configure( width =  self.width_of_scrolling_msg, 
-                               height = self.height_of_scrolling_frame)
+        self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
+                               height = Scrollable_Canvas.cls_height_of_scrolling_frame)
         
          
     def sb_content(self):
@@ -138,7 +154,10 @@ class Scrollable_Canvas():
                         
 #########################################################################
         
-        
+if __name__ == "__main__":  
+    root = Tk()      
     
+    temp = Scrollable_Canvas(root, 0,0,300,600)
     
+    mainloop()
     
