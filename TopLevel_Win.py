@@ -108,8 +108,11 @@ class TopLevelWindow(Toplevel):
         # self.resizable(0,0)
 
         self.menu_configuration()
-        # USE as needed ////  self.bindings = ibc.Bindings(self)
-        self.configure(borderwidth = 2)
+        # USE as needed ////   self.bindings = ibc.Bindings(self)
+
+
+
+        # self.configure(borderwidth = 2)
                
     #     self.init_scroll_window()
         

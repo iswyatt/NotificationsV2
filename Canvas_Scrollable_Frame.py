@@ -23,8 +23,11 @@ class Tabs():
                                 )        
 
 class Scrollable_Canvas():
+    
     cls_num_of_tabs = 4
+    
     cls_width_of_scrolling_msg = 0  # message width without the 
+    
     cls_vsb_width = 0               # width of the scrollbar
     cls_width_of_scrolling_frame = 0   # total width, messages and the vsb
     cls_height_of_scrolling_frame = 0  # height of the scrolling messages(i.e. the vsb height)
@@ -36,6 +39,8 @@ class Scrollable_Canvas():
     def __init__(self, context, x_place, y_place, width_of_scrolling_msg, height_of_scrolling_frame ):
         ######## class variables ################
         Scrollable_Canvas.cls_num_of_tabs += 1
+        self.frame_main_1_size = (0,0)
+
         print(f"Scrollable_Canvas # {Scrollable_Canvas.cls_num_of_tabs}")
         self.context = context
         self.x_place = x_place
@@ -45,13 +50,29 @@ class Scrollable_Canvas():
         
         Scrollable_Canvas.cls_height_of_scrolling_frame = height_of_scrolling_frame
         
-#self.scrollframe_width = IntVar() # callback when scroll_frame is updated, call_parent()
+        # self.scrollframe_width_t = IntVar() # callback when scroll_frame is updated, call_parent()
+        # self.scrollframe_width_t.set(Scrollable_Canvas.cls_width_of_scrolling_msg)
+        # self.scrollframe_width_t.trace('w', self.trace_width)
+        
+        
         
         # the width and height of frame as no effect,
         # use the dimentions of the canvas values.  
         self.frame_main_1 = Frame( self.context)
+        
+        #test
+        self.frame_main_1.configure( width = 325)
+        
+        self.print_bbox('first in init')
+        
+        
+        
         self.frame_main_1.place( x = x_place, 
                                  y = y_place )
+        
+        
+        self.print_bbox('after place() in init')
+        
         self.frame_main_1.grid_propagate(False)
         ### def sb_process_072(frame_main_1):
         # Add a canvas in that frame
@@ -70,7 +91,12 @@ class Scrollable_Canvas():
 
         self.scrollable_frame.bind( "<Configure>", 
                                     lambda e: self.canvas.configure( scrollregion=self.canvas.bbox("all") ))
-
+        
+        # temp_bbox = self.canvas.bbox("all")
+        # print(f'canvas bbox: {temp_bbox}')
+        
+        
+        
         self.canvas.create_window( (0, 0), 
                                    window = self.scrollable_frame, 
                                    anchor="nw")
@@ -89,12 +115,42 @@ class Scrollable_Canvas():
         self.update_canvas()
         self.call_parent()
         self.init_tabs()
+        
+        self.print_bbox('last in init')
+        
+        
+        # self.frame_main_1_size = (0,0)
+        
+        
+    def print_bbox(self, str='none'):
+        print('______________________________________________________________________') 
+        print(f'print_bbox number:{str}')   
+        
+        # temp_bbox = self.canvas.bbox("all")
+        # print(f'canvas bbox: {temp_bbox}')
+        
+        # ftemp_bbox = self.scrollable_frame.bbox("all")
+        # print(f'frame bbox: {ftemp_bbox}')  
+        
+        temp = self.frame_main_1.winfo_width()
+        t2   = self.frame_main_1.winfo_height()
+        print(f'self.frame_main_1.width: {temp}, height: {t2}') 
+        
+        print(f'tuple: {self.frame_main_1_size}')       
+        
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     ######################################################################### 
+    # def trace_width(self):
+    #     print(f' trace msg width: {Scrollable_Canvas.cls_width_of_scrolling_msg}')
+    
+    
     def init_tabs(self):
+        temp = self.frame_main_1.winfo_width()
+        self.print_bbox('init_tab')
         self.tb =   Tabs(   context = self.context,
                             place_x =  0,
                             place_y = 0,
-                            width = Scrollable_Canvas.cls_width_of_scrolling_frame,
+                            width =     temp,  #Scrollable_Canvas.cls_width_of_scrolling_frame,
                             height = 30  )
     ######################################################################### 
         self.tb.tab_frame.place( x = self.x_place, y = 0  )
@@ -109,21 +165,35 @@ class Scrollable_Canvas():
         self.context.update_idletasks()
         Scrollable_Canvas.cls_vsb_width = self.vsb.winfo_width() 
         ### set the sf with in the parent toplevel window  
-        Scrollable_Canvas.cls_width_of_scrolling_frame  = Scrollable_Canvas.cls_width_of_scrolling_msg + Scrollable_Canvas.cls_vsb_width    
+        Scrollable_Canvas.cls_width_of_scrolling_frame  = Scrollable_Canvas.cls_width_of_scrolling_msg + Scrollable_Canvas.cls_vsb_width  
+        
+        
+          
         self.context.scrollframe_width = Scrollable_Canvas.cls_width_of_scrolling_frame
         
     def update_canvas(self):
+        ### THIS METHOD IS CALLED FROM THE PARENT WINDOW WHEN IT IS RESIZED.
         ### Each instance of the canvas must be updated with the class variables,
         ### for that reasion a cls @classmethod method will not work
         ### this method is called whenever there is a window <Configure> charge from binding       
 
-        # self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
+        # self.canvas.configure( height = Scrollable_Canvas.cls_height_of_scrolling_frame)
+        self.print_bbox('update_canvas 1')
+        
+        
+        self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
+                               height = Scrollable_Canvas.cls_height_of_scrolling_frame)
+        self.print_bbox('update_canvas 2')   
+             
+        print(f'update_canvae, msg width: {Scrollable_Canvas.cls_width_of_scrolling_msg}, frame width: {Scrollable_Canvas.cls_width_of_scrolling_frame}')
+
+        # self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_frame, 
         #                        height = Scrollable_Canvas.cls_height_of_scrolling_frame)
 
-        self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_frame, 
-                               height = Scrollable_Canvas.cls_height_of_scrolling_frame)
+        self.print_bbox('update_canvas 3 this is self....winfo_')
+        
+        self.frame_main_1_size = ( self.frame_main_1.winfo_width(), self.frame_main_1.winfo_height() )      
 
-   
          
     def sb_content(self):
         # CONTENT OF THE SCROLL FRAME GOES HERE 

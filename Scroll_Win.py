@@ -43,7 +43,7 @@ class Scroll_Window(TopLevelWindow):
         delta =30
 
         self.s_frame = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
-        self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
+#self.s_frame1 = csf.Scrollable_Canvas(self, gTL.msg_width+delta, gTL.tab_height, gTL.msg_width, 500)   
         # self.s_frame2 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
         # self.s_frame3 = csf.Scrollable_Canvas(self, 0, gTL.tab_height, gTL.msg_width, 500)
 
@@ -60,7 +60,7 @@ class Scroll_Window(TopLevelWindow):
         self.bind('<Configure>', lambda e: self.window_configure_change(event = e) )
         ####################################################################
         
-        self.set_TL_width(2)
+        self.set_TL_width()
         
         
     def call_from_child(self):
@@ -86,6 +86,6 @@ class Scroll_Window(TopLevelWindow):
         csf.Scrollable_Canvas.cls_height_of_scrolling_frame = self.winfo_height() - gTL.tab_height - gTL.win_border
                
         self.s_frame.update_canvas()
-        self.s_frame1.update_canvas()
+        # self.s_frame1.update_canvas()
         
         
