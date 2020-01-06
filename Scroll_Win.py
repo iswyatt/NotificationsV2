@@ -61,7 +61,17 @@ class Scroll_Window(TopLevelWindow):
         ####################################################################
         
         self.set_TL_width()
+        self.get_width(1)   
         
+    def get_width(self, fstring):
+        
+        self.wait_visibility()
+        print('====================================================================================================')
+        print(fstring)
+        print(self.s_frame.frame_main_1_size)
+        print('====================================================================================================')
+
+       
         
     def call_from_child(self):
         print('call from child')  

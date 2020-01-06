@@ -20,11 +20,24 @@ class Tabs():
                                 highlightcolor="green", 
                                 highlightthickness=1,
                                 bg = mcolor
-                                )        
-
+                                )  
+        self.tab_frame.place( x  = 0,
+                              y = 0,
+                              width = 327,
+                              height = 40) 
+        
+        
+        
+        btn_update = Button( master = self.tab_frame, 
+                    text = "update",
+                    command = self.cmd_btn_update) 
+        btn_update.pack(padx=(5,10), pady = (2,5))  
+        
+    def cmd_btn_update(self):
+        print('btn_undate')  
+##########################################################################
 class Scrollable_Canvas():
     
-    cls_num_of_tabs = 4
     
     cls_width_of_scrolling_msg = 0  # message width without the 
     
@@ -33,15 +46,12 @@ class Scrollable_Canvas():
     cls_height_of_scrolling_frame = 0  # height of the scrolling messages(i.e. the vsb height)
     cls_tab_height = 20             # height of the selector tabs 
     cls_top_label_height = 15       # height of the label just below the tabs
-    cls_top_frame_height =  600     # cls_tab_height + cls_top_label_height   
+    cls_top_frame_height =  60     # cls_tab_height + cls_top_label_height   
                                    
     
     def __init__(self, context, x_place, y_place, width_of_scrolling_msg, height_of_scrolling_frame ):
         ######## class variables ################
-        Scrollable_Canvas.cls_num_of_tabs += 1
         self.frame_main_1_size = (0,0)
-
-        print(f"Scrollable_Canvas # {Scrollable_Canvas.cls_num_of_tabs}")
         self.context = context
         self.x_place = x_place
         self.y_place = y_place
@@ -61,18 +71,13 @@ class Scrollable_Canvas():
         self.frame_main_1 = Frame( self.context)
         
         #test
-        self.frame_main_1.configure( width = 325)
-        
-        self.print_bbox('first in init')
-        
+        # self.frame_main_1.configure( width = 325)
+              
         
         
         self.frame_main_1.place( x = x_place, 
                                  y = y_place )
-        
-        
-        self.print_bbox('after place() in init')
-        
+                
         self.frame_main_1.grid_propagate(False)
         ### def sb_process_072(frame_main_1):
         # Add a canvas in that frame
@@ -84,10 +89,12 @@ class Scrollable_Canvas():
                               command = self.canvas.yview)
         
         self.canvas.configure(yscrollcommand = self.vsb.set)
-        ### def sb_process_176(canvas):
+        
         # Make a scrollable frame linked to the canvas
         # and a window in the canvas holding the scrollable frame
         self.scrollable_frame = Frame(self.canvas)
+        
+        self.scrollable_frame.configure( width = 321)
 
         self.scrollable_frame.bind( "<Configure>", 
                                     lambda e: self.canvas.configure( scrollregion=self.canvas.bbox("all") ))
@@ -107,19 +114,25 @@ class Scrollable_Canvas():
         ### pack canvas and scrollbars, geometry updated after content
         self.canvas.pack(side="left", fill="both", expand=True)
         self.vsb.pack(side="right", fill="y")
+        
+        
+        
+        self.set_inital_geometry()
         ### end of 210
         ##################
         self.sb_content()  ## PLACE THE SCROLLING MESSAGES IN THIS METHOD
         ##################
-        self.set_inital_geometry()
+        # self.set_inital_geometry()
+        # self.print_bbox('AFTER INITIAL GEOMETRY')                
+
         self.update_canvas()
-        self.call_parent()
+
+        # self.call_parent()
         self.init_tabs()
         
-        self.print_bbox('last in init')
         
         
-        # self.frame_main_1_size = (0,0)
+        #self.frame_main_1_size = ""
         
         
     def print_bbox(self, str='none'):
@@ -178,12 +191,10 @@ class Scrollable_Canvas():
         ### this method is called whenever there is a window <Configure> charge from binding       
 
         # self.canvas.configure( height = Scrollable_Canvas.cls_height_of_scrolling_frame)
-        self.print_bbox('update_canvas 1')
         
         
         self.canvas.configure( width =  Scrollable_Canvas.cls_width_of_scrolling_msg, 
                                height = Scrollable_Canvas.cls_height_of_scrolling_frame)
-        self.print_bbox('update_canvas 2')   
              
         print(f'update_canvae, msg width: {Scrollable_Canvas.cls_width_of_scrolling_msg}, frame width: {Scrollable_Canvas.cls_width_of_scrolling_frame}')
 
@@ -228,13 +239,12 @@ class Scrollable_Canvas():
             label.pack_propagate(0)
             label.pack( fill='none',
                         side = 'left')
-                        
 #########################################################################
         
 if __name__ == "__main__":  
     root = Tk()      
-    
-    temp = Scrollable_Canvas(root, 0,0,300,600)
+    root.geometry('500x800+400+100')
+    sc_messages = Scrollable_Canvas(root, 0,30,300,600)
     
     mainloop()
     
